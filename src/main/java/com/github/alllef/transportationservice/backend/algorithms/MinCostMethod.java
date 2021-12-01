@@ -29,6 +29,11 @@ public class MinCostMethod {
             return;
     }
 
+    public void minCostAlgo() {
+        while (blockedStocks.size() != tmpStocks.size() && tmpNeeds.size() != blockedNeeds.size())
+            minCostIter();
+    }
+
     public void minCostIter() {
         CostNode leastNode = tmpCostsMatrix.stream()
                 .min(Comparator.comparingInt(CostNode::getCosts)).orElseThrow();
@@ -42,7 +47,10 @@ public class MinCostMethod {
         tmpStocks.set(stockNum, tmpStocks.get(stockNum) - cost);
         tmpNeeds.set(needsNum, tmpStocks.get(needsNum) - cost);
 
-        if (tmpStocks.get(stockNum) == 0 && tmpNeeds.get(needsNum) == 0)
+        if (blockedStocks.size() == tmpStocks.size() - 1 && blockedNeeds.size() == tmpNeeds.size() - 1) {
+            blockNeeds(needsNum);
+            blockStocks(stockNum);
+        } else if (tmpStocks.get(stockNum) == 0 && tmpNeeds.get(needsNum) == 0)
             blockNeeds(needsNum);
         else if (tmpStocks.get(stockNum) == 0)
             blockStocks(stockNum);
@@ -72,5 +80,9 @@ public class MinCostMethod {
             result += key * nodesWithPlanNum.get(key).getCosts();
 
         return result;
+    }
+
+    private boolean isDegenerate() {
+        return (tmpStocks.size() + tmpNeeds.size() - 1) != nodesWithPlanNum.size();
     }
 }
