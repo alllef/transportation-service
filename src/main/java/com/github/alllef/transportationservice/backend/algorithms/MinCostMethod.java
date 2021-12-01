@@ -6,25 +6,37 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
 public class MinCostMethod {
     private CostsModel costsModel;
-    private List<CostNode> tmpCostsMatrix;
-    private Map<Integer, CostNode> nodesWithPlanNum;
-    private List<Integer> tmpStocks;
-    private List<Integer> tmpNeeds;
 
-    private List<Integer> blockedStocks;
-    private List<Integer> blockedNeeds;
+    private List<CostNode> tmpCostsMatrix = new ArrayList<>();
+    private List<Integer> tmpStocks = new ArrayList<>();
+    private List<Integer> tmpNeeds = new ArrayList<>();
+
+    private Map<Integer, CostNode> nodesWithPlanNum = new HashMap<>();
+    private List<Integer> blockedStocks = new ArrayList<>();
+    private List<Integer> blockedNeeds = new ArrayList<>();
+
+    public MinCostMethod(CostsModel costsModel) {
+        this.costsModel = costsModel;
+        tmpCostsMatrix.addAll(costsModel.getCostsMatrix());
+        tmpStocks.addAll(costsModel.getStocks());
+        tmpNeeds.addAll(costsModel.getNeeds());
+    }
+
+    public int startAlgo() {
+        checkIsOpenedTask();
+        minCostAlgo();
+        if (isDegenerate()) throw new RuntimeException("Is degenerate. It is not possible");
+        else
+            return calcTransportSum();
+    }
 
     public void checkIsOpenedTask() {
         if (!costsModel.isClosed()) {
