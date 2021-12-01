@@ -1,5 +1,6 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
+import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,12 +14,14 @@ import java.util.Objects;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class CostsMatrix {
+public class CostsModel {
     private List<CostNode> costsMatrix;
-    List<Integer> needs;
-    List<Integer> stocks;
+    private List<Integer> needs;
+    private List<Integer> stocks;
 
     public boolean isClosed() {
-        return Objects.equals(needs.stream().reduce(0, Integer::sum), stocks.stream().reduce(0, Integer::sum));
+        return Objects.equals(AlgoUtils.sum(needs), AlgoUtils.sum(stocks));
     }
+
+
 }

@@ -1,10 +1,12 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
+import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @ToString
 public class MinCostMethod {
-    private CostsMatrix costsMatrix;
+    private CostsModel costsModel;
     private List<CostNode> tmpCostsMatrix;
     private Map<Integer, CostNode> nodesWithPlanNum;
     private List<Integer> tmpStocks;
@@ -25,8 +27,19 @@ public class MinCostMethod {
     private List<Integer> blockedNeeds;
 
     public void checkIsOpenedTask() {
-        if (!costsMatrix.isClosed())
-            return;
+        if (!costsModel.isClosed()) {
+            if (AlgoUtils.sum(costsModel.getNeeds()) > AlgoUtils.sum(costsModel.getStocks())) {
+                int additionalStocks = AlgoUtils.sum(costsModel.getNeeds()) - AlgoUtils.sum(costsModel.getStocks());
+                tmpStocks.add(additionalStocks);
+                for (int i = 0; i < costsModel.getNeeds().size(); i++)
+                    tmpCostsMatrix.add(new CostNode(i, costsModel.getStocks().size() + 1, -1));
+            } else {
+                int additionalNeeds = AlgoUtils.sum(costsModel.getStocks()) - AlgoUtils.sum(costsModel.getNeeds());
+                for (int i = 0; i < costsModel.getStocks().size(); i++)
+                    tmpCostsMatrix.add(new CostNode(costsModel.getNeeds().size() + 1, i, -1));
+                tmpNeeds.add(additionalNeeds);
+            }
+        }
     }
 
     public void minCostAlgo() {
@@ -36,7 +49,8 @@ public class MinCostMethod {
 
     public void minCostIter() {
         CostNode leastNode = tmpCostsMatrix.stream()
-                .min(Comparator.comparingInt(CostNode::getCosts)).orElseThrow();
+                .min(Comparator.comparingInt(CostNode::getCosts))
+                .orElseThrow();
 
         int stockNum = leastNode.getStocksNumber();
         int needsNum = leastNode.getNeedsNumber();
