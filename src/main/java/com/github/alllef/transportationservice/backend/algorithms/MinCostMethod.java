@@ -1,6 +1,7 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
+import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,17 +16,17 @@ import java.util.stream.Collectors;
 public class MinCostMethod {
     private CostsModel costsModel;
 
-    private List<CostNode> tmpCostsMatrix = new ArrayList<>();
+    private Map<Coords, Integer> tmpCostsMatrix = new HashMap<>();
     private List<Integer> tmpStocks = new ArrayList<>();
     private List<Integer> tmpNeeds = new ArrayList<>();
 
-    private Map<Integer, CostNode> nodesWithPlanNum = new HashMap<>();
+    private Map<Coords, Integer> nodesWithPlanNum = new HashMap<>();
     private List<Integer> blockedStocks = new ArrayList<>();
     private List<Integer> blockedNeeds = new ArrayList<>();
 
     public MinCostMethod(CostsModel costsModel) {
         this.costsModel = costsModel;
-        tmpCostsMatrix.addAll(costsModel.getCostsMatrix());
+        tmpCostsMatrix.putAll(costsModel.getCostsMatrix());
         tmpStocks.addAll(costsModel.getStocks());
         tmpNeeds.addAll(costsModel.getNeeds());
     }
@@ -44,11 +45,11 @@ public class MinCostMethod {
                 int additionalStocks = AlgoUtils.sum(costsModel.getNeeds()) - AlgoUtils.sum(costsModel.getStocks());
                 tmpStocks.add(additionalStocks);
                 for (int i = 0; i < costsModel.getNeeds().size(); i++)
-                    tmpCostsMatrix.add(new CostNode(i, costsModel.getStocks().size() + 1, -1));
+                    tmpCostsMatrix.put(new Coords(i, costsModel.getStocks().size()), -1);
             } else {
                 int additionalNeeds = AlgoUtils.sum(costsModel.getStocks()) - AlgoUtils.sum(costsModel.getNeeds());
                 for (int i = 0; i < costsModel.getStocks().size(); i++)
-                    tmpCostsMatrix.add(new CostNode(costsModel.getNeeds().size() + 1, i, -1));
+                    tmpCostsMatrix.put(new Coords(costsModel.getNeeds().size(), i), -1);
                 tmpNeeds.add(additionalNeeds);
             }
         }
@@ -60,15 +61,16 @@ public class MinCostMethod {
     }
 
     public void minCostIter() {
-        CostNode leastNode = tmpCostsMatrix.stream()
-                .min(Comparator.comparingInt(CostNode::getCosts))
+        Map.Entry<Coords, Integer> leastNode = tmpCostsMatrix.entrySet()
+                .stream()
+                .min(Comparator.comparingInt(Map.Entry::getValue))
                 .orElseThrow();
 
-        int stockNum = leastNode.getStocksNumber();
-        int needsNum = leastNode.getNeedsNumber();
+        int stockNum = leastNode.getKey().stocks();
+        int needsNum = leastNode.getKey().needs();
         int cost = Math.min(tmpStocks.get(stockNum), tmpNeeds.get(needsNum));
 
-        nodesWithPlanNum.put(cost, leastNode);
+        nodesWithPlanNum.put(leastNode.getKey(), leastNode.getValue());
 
         tmpStocks.set(stockNum, tmpStocks.get(stockNum) - cost);
         tmpNeeds.set(needsNum, tmpStocks.get(needsNum) - cost);
@@ -85,25 +87,27 @@ public class MinCostMethod {
     }
 
     private void blockNeeds(int needsNum) {
-        tmpCostsMatrix = tmpCostsMatrix.stream()
-                .filter(node -> node.getNeedsNumber() != needsNum)
-                .collect(Collectors.toList());
+        tmpCostsMatrix = tmpCostsMatrix.entrySet()
+                .stream()
+                .filter(node -> node.getKey().needs() != needsNum)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         blockedNeeds.add(needsNum);
     }
 
     private void blockStocks(int stocksNum) {
-        tmpCostsMatrix = tmpCostsMatrix.stream()
-                .filter(node -> node.getStocksNumber() != stocksNum)
-                .collect(Collectors.toList());
+        tmpCostsMatrix = tmpCostsMatrix.entrySet()
+                .stream()
+                .filter(node -> node.getKey().stocks() != stocksNum)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         blockedStocks.add(stocksNum);
     }
 
     public int calcTransportSum() {
         int result = 0;
-        for (Integer key : nodesWithPlanNum.keySet())
-            result += key * nodesWithPlanNum.get(key).getCosts();
+        for (Coords key : nodesWithPlanNum.keySet())
+            result += nodesWithPlanNum.get(key) * costsModel.getCostsMatrix().get(key);
 
         return result;
     }

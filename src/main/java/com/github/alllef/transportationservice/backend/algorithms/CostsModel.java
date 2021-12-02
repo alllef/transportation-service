@@ -1,21 +1,20 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
+import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
 public class CostsModel {
-    private List<CostNode> costsMatrix = new ArrayList<>();
+    private Map<Coords,Integer> costsMatrix = new HashMap<>();
     private List<Integer> needs;
     private List<Integer> stocks;
 
@@ -25,7 +24,7 @@ public class CostsModel {
 
         for (int i = 0; i < costsMatrix.length; i++) {
             for (int j = 0; j < costsMatrix.length; j++) {
-                this.costsMatrix.add(new CostNode(i, j, costsMatrix[i][j]));
+                this.costsMatrix.put(new Coords(i,j), costsMatrix[i][j]);
             }
         }
     }
