@@ -15,22 +15,22 @@ import java.util.*;
 @ToString
 public class CostsModel {
     private Map<Coords,Integer> costsMatrix = new HashMap<>();
-    private List<Integer> needs;
-    private List<Integer> stocks;
+    private List<Integer> providers;
+    private List<Integer> consumers;
 
-    public CostsModel(int[][] costsMatrix, List<Integer> needs, List<Integer> stocks) {
-        this.needs = needs;
-        this.stocks = stocks;
+    public CostsModel(int[][] costsMatrix, List<Integer> providers, List<Integer> consumers) {
+        this.providers = providers;
+        this.consumers = consumers;
 
-        for (int i = 0; i < costsMatrix.length; i++) {
-            for (int j = 0; j < costsMatrix.length; j++) {
-                this.costsMatrix.put(new Coords(i,j), costsMatrix[i][j]);
+        for (int tmpProvider = 0; tmpProvider < costsMatrix.length; tmpProvider++) {
+            for (int tmpConsumer  = 0; tmpConsumer < costsMatrix.length; tmpConsumer++) {
+                this.costsMatrix.put(new Coords(tmpProvider,tmpConsumer), costsMatrix[tmpProvider][tmpConsumer]);
             }
         }
     }
 
     public boolean isClosed() {
-        return Objects.equals(AlgoUtils.sum(needs), AlgoUtils.sum(stocks));
+        return Objects.equals(AlgoUtils.sum(providers), AlgoUtils.sum(consumers));
     }
 
 }
