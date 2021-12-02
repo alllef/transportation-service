@@ -11,7 +11,7 @@ public class Potentials {
     private List<Optional<Integer>> providersPotentials;
     private List<Optional<Integer>> consumersPotentials;
 
-    Potentials() {
+    public Potentials() {
         potentialNodes.putAll(minCostMethod.getNodesWithPlanNum());
         for (int i = 0; i < minCostMethod.getTmpConsumers().size(); i++)
             providersPotentials.add(Optional.empty());
@@ -53,15 +53,37 @@ public class Potentials {
                 }
             }
         }
-        if(minUnusedPathCost!=null)
-            potentialNodes.put(minUnusedPathCost.getKey(),minUnusedPathCost.getValue());
+        if (minUnusedPathCost != null)
+            potentialNodes.put(minUnusedPathCost.getKey(), minUnusedPathCost.getValue());
 
         return isOptimalSolution;
     }
 
-    public void optimizeSolution(Map.Entry<Coords,Integer> starterNode){
-        Set<Coords> foundNodes;
-        Stack<Map.Entry<Coords,Integer>> nodesWithPlanNum = new Stack<>();
+    public void optimizeSolution(Map.Entry<Coords, Integer> starterNode) {
+        Set<Coords> foundCoords = new HashSet<>();
+        Stack<Coords> planNodeCoordsStack = new Stack<>();
+        planNodeCoordsStack.push(starterNode.getKey());
+        foundCoords.add(starterNode.getKey());
 
+        do {
+            Coords coords = planNodeCoordsStack.peek();
+
+            for (int providerKey = 0; providerKey < providersPotentials.size(); providerKey++) {
+                Coords tmpCoords = new Coords(providerKey, coords.consumer());
+                if (potentialNodes.get(tmpCoords) != null) {
+                    if (!foundCoords.contains(tmpCoords)) {
+                        foundCoords.add(coords);
+                        planNodeCoordsStack.push(tmpCoords);
+                    } else if (tmpCoords.equals(starterNode.getKey()))
+                        planNodeCoordsStack.push(tmpCoords);
+                    break;
+                }
+            }
+
+            for (int consumerKey = 0; consumerKey < consumersPotentials.size(); consumerKey++) {
+
+            }
+
+        } while (!planNodeCoordsStack.peek().equals(starterNode.getKey()));
     }
 }
