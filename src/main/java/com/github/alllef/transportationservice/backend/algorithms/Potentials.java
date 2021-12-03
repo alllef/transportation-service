@@ -59,11 +59,12 @@ public class Potentials {
         return isOptimalSolution;
     }
 
-    public void optimizeSolution(Map.Entry<Coords, Integer> starterNode) {
+    public List<Coords> getPathsCycle(Map.Entry<Coords, Integer> starterNode) {
         Set<Coords> foundCoords = new HashSet<>();
         Stack<Coords> planNodeCoordsStack = new Stack<>();
         planNodeCoordsStack.push(starterNode.getKey());
         foundCoords.add(starterNode.getKey());
+        boolean isFoundFinal = false;
 
         do {
             Coords coords = planNodeCoordsStack.peek();
@@ -74,16 +75,53 @@ public class Potentials {
                     if (!foundCoords.contains(tmpCoords)) {
                         foundCoords.add(coords);
                         planNodeCoordsStack.push(tmpCoords);
-                    } else if (tmpCoords.equals(starterNode.getKey()))
-                        planNodeCoordsStack.push(tmpCoords);
-                    break;
+                        break;
+                    } else if (tmpCoords.equals(starterNode.getKey())) {
+                        isFoundFinal = true;
+                        break;
+                    }
                 }
             }
 
-            for (int consumerKey = 0; consumerKey < consumersPotentials.size(); consumerKey++) {
+            if (isFoundFinal)
+                break;
 
+            for (int consumerKey = 0; consumerKey < consumersPotentials.size(); consumerKey++) {
+                Coords tmpCoords = new Coords(coords.provider(), consumerKey);
+                if (potentialNodes.get(tmpCoords) != null) {
+                    if (!foundCoords.contains(tmpCoords)) {
+                        foundCoords.add(coords);
+                        planNodeCoordsStack.push(tmpCoords);
+                        break;
+                    } else if (tmpCoords.equals(starterNode.getKey())) {
+                        isFoundFinal = true;
+                        break;
+                    }
+                }
             }
 
-        } while (!planNodeCoordsStack.peek().equals(starterNode.getKey()));
+        } while (!isFoundFinal);
+
+        return planNodeCoordsStack.stream()
+                .toList();
     }
+
+    private void optimizeSolution(List<Coords> pathsCycle) {
+        List<Coords> minusCoords = new ArrayList<>();
+
+        for (int i = 1; i < pathsCycle.size(); i += 2)
+            minusCoords.add(pathsCycle.get(i));
+
+        int changeNumber = minusCoords.stream()
+                .map(potentialNodes::get)
+                .min(Integer::compare)
+                .orElseThrow();
+
+        for (int i = 0; i < pathsCycle.size(); i++) {
+            if (i % 2 == 0) potentialNodes.put(pathsCycle.get(i), potentialNodes.get(pathsCycle.get(i)) + changeNumber);
+            else
+                potentialNodes.put(pathsCycle.get(i), potentialNodes.get(pathsCycle.get(i)) - changeNumber);
+        }
+    }
+
 }
