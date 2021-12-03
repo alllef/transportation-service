@@ -23,37 +23,39 @@ public class MinCostMethod {
     private Map<Coords, Integer> nodesWithPlanNum = new HashMap<>();
     private List<Integer> blockedProvidersKeys = new ArrayList<>();
     private List<Integer> blockedConsumersKeys = new ArrayList<>();
+    private Map<Coords, Integer> additionalBlockedValueMatrix = new HashMap<>();
 
     public MinCostMethod(CostsModel costsModel) {
         this.costsModel = costsModel;
         tmpCostsMatrix.putAll(costsModel.getCostsMatrix());
         tmpProviders.addAll(costsModel.getProviders());
         tmpConsumers.addAll(costsModel.getConsumers());
+        startAlgo();
     }
 
-    public int startAlgo() {
-        checkIsOpenedTask();
+    private void startAlgo() {
+        if (!costsModel.isClosed())
+            convertOpenTaskToClosed();
+
+        additionalBlockedValueMatrix.putAll(tmpCostsMatrix);
+
         minCostAlgo();
         if (isDegenerate()) throw new RuntimeException("Is degenerate. It is not possible");
-        else
-            return calcTransportSum();
     }
 
-    private void checkIsOpenedTask() {
-
-        if (!costsModel.isClosed()) {
-            if (AlgoUtils.sum(costsModel.getProviders()) > AlgoUtils.sum(costsModel.getConsumers())) {
-                int additionalConsumer = AlgoUtils.sum(costsModel.getProviders()) - AlgoUtils.sum(costsModel.getConsumers());
-                tmpProviders.add(additionalConsumer);
-                for (int i = 0; i < costsModel.getProviders().size(); i++)
-                    tmpCostsMatrix.put(new Coords(i, costsModel.getConsumers().size()), -1);
-            } else {
-                int additionalProvider = AlgoUtils.sum(costsModel.getConsumers()) - AlgoUtils.sum(costsModel.getProviders());
-                for (int i = 0; i < costsModel.getConsumers().size(); i++)
-                    tmpCostsMatrix.put(new Coords(costsModel.getProviders().size(), i), -1);
-                tmpConsumers.add(additionalProvider);
-            }
+    private void convertOpenTaskToClosed() {
+        if (AlgoUtils.sum(costsModel.getProviders()) > AlgoUtils.sum(costsModel.getConsumers())) {
+            int additionalConsumer = AlgoUtils.sum(costsModel.getProviders()) - AlgoUtils.sum(costsModel.getConsumers());
+            tmpConsumers.add(additionalConsumer);
+            for (int i = 0; i < costsModel.getProviders().size(); i++)
+                tmpCostsMatrix.put(new Coords(i, costsModel.getConsumers().size()), -1);
+        } else {
+            int additionalProvider = AlgoUtils.sum(costsModel.getConsumers()) - AlgoUtils.sum(costsModel.getProviders());
+            for (int i = 0; i < costsModel.getConsumers().size(); i++)
+                tmpCostsMatrix.put(new Coords(costsModel.getProviders().size(), i), -1);
+            tmpProviders.add(additionalProvider);
         }
+
     }
 
     private void minCostAlgo() {
@@ -62,7 +64,7 @@ public class MinCostMethod {
     }
 
     private void minCostIter() {
-        Map.Entry<Coords, Integer> leastNode = tmpCostsMatrix.entrySet()
+        Map.Entry<Coords, Integer> leastNode = additionalBlockedValueMatrix.entrySet()
                 .stream()
                 .min(Comparator.comparingInt(Map.Entry::getValue))
                 .orElseThrow();
@@ -93,7 +95,7 @@ public class MinCostMethod {
     }
 
     private void blockEntity(int entityKey, EntityType type) {
-        tmpCostsMatrix = tmpCostsMatrix.entrySet()
+        additionalBlockedValueMatrix = additionalBlockedValueMatrix.entrySet()
                 .stream()
                 .filter(node -> {
                     if (type == EntityType.PROVIDER) return node.getKey().provider() != entityKey;
@@ -105,10 +107,10 @@ public class MinCostMethod {
         else blockedProvidersKeys.add(entityKey);
     }
 
-    private int calcTransportSum() {
+    public int calcTransportSum() {
         int result = 0;
         for (Coords key : nodesWithPlanNum.keySet())
-            result += nodesWithPlanNum.get(key) * costsModel.getCostsMatrix().get(key);
+            result += nodesWithPlanNum.get(key) * tmpCostsMatrix.get(key)/*costsModel.getCostsMatrix().get(key)*/;
 
         return result;
     }
