@@ -1,7 +1,7 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
-import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -38,7 +38,7 @@ public class MinCostMethod {
             return calcTransportSum();
     }
 
-    public void checkIsOpenedTask() {
+    private void checkIsOpenedTask() {
 
         if (!costsModel.isClosed()) {
             if (AlgoUtils.sum(costsModel.getProviders()) > AlgoUtils.sum(costsModel.getConsumers())) {
@@ -55,12 +55,12 @@ public class MinCostMethod {
         }
     }
 
-    public void minCostAlgo() {
+    private void minCostAlgo() {
         while (blockedProvidersKeys.size() != tmpProviders.size() && tmpConsumers.size() != blockedConsumersKeys.size())
             minCostIter();
     }
 
-    public void minCostIter() {
+    private void minCostIter() {
         Map.Entry<Coords, Integer> leastNode = tmpCostsMatrix.entrySet()
                 .stream()
                 .min(Comparator.comparingInt(Map.Entry::getValue))
@@ -68,25 +68,25 @@ public class MinCostMethod {
 
         int consumerKey = leastNode.getKey().consumer();
         int providerKey = leastNode.getKey().provider();
-        int cost = Math.min(tmpProviders.get(consumerKey), tmpConsumers.get(providerKey));
+        int cost = Math.min(tmpProviders.get(providerKey), tmpConsumers.get(consumerKey));
 
-        nodesWithPlanNum.put(leastNode.getKey(), leastNode.getValue());
+        nodesWithPlanNum.put(leastNode.getKey(), cost);
 
         tmpProviders.set(consumerKey, tmpProviders.get(consumerKey) - cost);
         tmpConsumers.set(providerKey, tmpProviders.get(providerKey) - cost);
 
         if (blockedProvidersKeys.size() == tmpProviders.size() - 1 && blockedConsumersKeys.size() == tmpConsumers.size() - 1) {
-            blockProvider(providerKey);
+            blockEntity(providerKey);
             blockConsumer(consumerKey);
         } else if (tmpProviders.get(consumerKey) == 0 && tmpConsumers.get(providerKey) == 0)
-            blockProvider(providerKey);
+            blockEntity(providerKey);
         else if (tmpProviders.get(consumerKey) == 0)
             blockConsumer(consumerKey);
         else
-            blockProvider(providerKey);
+            blockEntity(providerKey);
     }
 
-    private void blockProvider(int providerKey) {
+    private void blockEntity(int providerKey) {
         tmpCostsMatrix = tmpCostsMatrix.entrySet()
                 .stream()
                 .filter(node -> node.getKey().provider() != providerKey)
@@ -104,7 +104,7 @@ public class MinCostMethod {
         blockedProvidersKeys.add(consumerKey);
     }
 
-    public int calcTransportSum() {
+    private int calcTransportSum() {
         int result = 0;
         for (Coords key : nodesWithPlanNum.keySet())
             result += nodesWithPlanNum.get(key) * costsModel.getCostsMatrix().get(key);

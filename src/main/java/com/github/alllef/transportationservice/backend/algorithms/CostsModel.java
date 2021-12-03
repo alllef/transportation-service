@@ -1,7 +1,7 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
-import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

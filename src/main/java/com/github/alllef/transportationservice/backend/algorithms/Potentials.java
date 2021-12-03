@@ -1,6 +1,6 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
-import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
 import com.helger.commons.collection.map.MapEntry;
 
 import java.util.*;
