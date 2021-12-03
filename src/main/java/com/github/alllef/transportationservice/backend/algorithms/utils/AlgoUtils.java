@@ -1,7 +1,5 @@
 package com.github.alllef.transportationservice.backend.algorithms.utils;
 
-import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
-
 import java.util.Collection;
 import java.util.Map;
 

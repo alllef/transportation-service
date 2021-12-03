@@ -1,6 +1,7 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
-import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.enums.EntityType;
 import com.helger.commons.collection.map.MapEntry;
 import lombok.Getter;
 
@@ -68,43 +69,54 @@ public class Potentials {
     private List<Coords> getPathsCycle(Map.Entry<Coords, Integer> starterNode) {
         Set<Coords> foundCoords = new HashSet<>();
         Stack<Coords> planNodeCoordsStack = new Stack<>();
+        Coords coordsFromStart = null;
         planNodeCoordsStack.push(starterNode.getKey());
         foundCoords.add(starterNode.getKey());
         boolean isFoundFinal = false;
 
         do {
             Coords coords = planNodeCoordsStack.peek();
+            boolean foundNext = false;
+            for (EntityType entityType : EntityType.values()) {
+                int entitiesNum = 0;
 
-            for (int providerKey = 0; providerKey < providersPotentials.size(); providerKey++) {
-                Coords tmpCoords = new Coords(providerKey, coords.consumer());
-                if (potentialNodes.get(tmpCoords) != null) {
-                    if (!foundCoords.contains(tmpCoords)) {
-                        foundCoords.add(coords);
-                        planNodeCoordsStack.push(tmpCoords);
-                        break;
-                    } else if (tmpCoords.equals(starterNode.getKey())) {
-                        isFoundFinal = true;
-                        break;
+                switch (entityType) {
+                    case PROVIDER -> entitiesNum = providersPotentials.size();
+                    case CONSUMER -> entitiesNum = consumersPotentials.size();
+                }
+
+                for (int entityKey = 0; entityKey < entitiesNum; entityKey++) {
+                    Coords tmpCoords = null;
+
+                    switch (entityType) {
+                        case PROVIDER -> tmpCoords = new Coords(entityKey, coords.consumer());
+                        case CONSUMER -> tmpCoords = new Coords(coords.provider(), entityKey);
+                    }
+
+                    if (tmpCoords.equals(coords))
+                        continue;
+
+                    if (potentialNodes.get(tmpCoords) != null) {
+                        if (!foundCoords.contains(tmpCoords)) {
+                            if (coords.equals(starterNode.getKey()))
+                                coordsFromStart = tmpCoords;
+                            foundCoords.add(coords);
+                            planNodeCoordsStack.push(tmpCoords);
+                            foundNext = true;
+                            break;
+                        } else if (tmpCoords.equals(starterNode.getKey())) {
+                            if (coords.equals(coordsFromStart))
+                                continue;
+                            isFoundFinal = true;
+                            break;
+                        }
                     }
                 }
+                if (foundNext || isFoundFinal)
+                    break;
             }
-
-            if (isFoundFinal)
-                break;
-
-            for (int consumerKey = 0; consumerKey < consumersPotentials.size(); consumerKey++) {
-                Coords tmpCoords = new Coords(coords.provider(), consumerKey);
-                if (potentialNodes.get(tmpCoords) != null) {
-                    if (!foundCoords.contains(tmpCoords)) {
-                        foundCoords.add(coords);
-                        planNodeCoordsStack.push(tmpCoords);
-                        break;
-                    } else if (tmpCoords.equals(starterNode.getKey())) {
-                        isFoundFinal = true;
-                        break;
-                    }
-                }
-            }
+            if (!foundNext)
+                planNodeCoordsStack.pop();
 
         } while (!isFoundFinal);
 

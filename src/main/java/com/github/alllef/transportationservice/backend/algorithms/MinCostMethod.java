@@ -1,12 +1,11 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
-import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
 import com.github.alllef.transportationservice.backend.algorithms.utils.enums.EntityType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.data.relational.core.sql.In;
 
 import java.util.*;
 import java.util.stream.Collectors;
