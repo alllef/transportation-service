@@ -2,6 +2,7 @@ package com.github.alllef.transportationservice.algorithm;
 
 import com.github.alllef.transportationservice.backend.algorithms.CostsModel;
 import com.github.alllef.transportationservice.backend.algorithms.MinCostMethod;
+import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -26,7 +27,7 @@ public class MinCostMethodTests {
         CostsModel costsModel = new CostsModel(costsRow, providers, consumers);
 
         MinCostMethod costMethod = new MinCostMethod(costsModel);
-        assertEquals(115, costMethod.calcTransportSum());
+        assertEquals(115, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(),costMethod.getTmpCostsMatrix()));
     }
 
     // Example is from http://reshmat.ru/example_transport_2.html
@@ -42,7 +43,7 @@ public class MinCostMethodTests {
 
         MinCostMethod costMethod = new MinCostMethod(costsModel);
         assertEquals(providers.size() + 1, costMethod.getTmpProviders().size());
-        assertEquals(190, costMethod.calcTransportSum());
+        assertEquals(190, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(),costMethod.getTmpCostsMatrix()));
     }
 
     // Example is from http://reshmat.ru/example_transport_3.html
@@ -57,7 +58,7 @@ public class MinCostMethodTests {
         CostsModel costsModel = new CostsModel(costsRow, providers, consumers);
 
         MinCostMethod costMethod = new MinCostMethod(costsModel);
-        assertEquals(215, costMethod.calcTransportSum());
+        assertEquals(215, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(),costMethod.getTmpCostsMatrix()));
         assertEquals(consumers.size() + 1, costMethod.getTmpConsumers().size());
     }
 }

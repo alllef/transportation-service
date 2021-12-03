@@ -41,7 +41,7 @@ public class MinCostMethod {
         additionalBlockedValueMatrix.putAll(tmpCostsMatrix);
 
         minCostAlgo();
-        if (isDegenerate()) throw new RuntimeException("Is degenerate. It is not possible");
+        if (AlgoUtils.isDegenerate(tmpProviders.size(),tmpConsumers.size(),nodesWithPlanNum.size())) throw new RuntimeException("Is degenerate. It is not possible");
     }
 
     private void convertOpenTaskToClosed() {
@@ -123,7 +123,5 @@ public class MinCostMethod {
         return result;
     }
 
-    private boolean isDegenerate() {
-        return (tmpProviders.size() + tmpConsumers.size() - 1) != nodesWithPlanNum.size();
-    }
+
 }

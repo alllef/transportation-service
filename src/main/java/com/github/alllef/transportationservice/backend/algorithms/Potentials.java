@@ -2,38 +2,44 @@ package com.github.alllef.transportationservice.backend.algorithms;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
 import com.helger.commons.collection.map.MapEntry;
+import lombok.Getter;
 
 import java.util.*;
 
+@Getter
 public class Potentials {
     private MinCostMethod minCostMethod;
     private Map<Coords, Integer> potentialNodes = new HashMap<>();
     private List<Optional<Integer>> providersPotentials = new ArrayList<>();
     private List<Optional<Integer>> consumersPotentials = new ArrayList<>();
 
-    public Potentials() {
+    public Potentials(MinCostMethod minCostMethod) {
+        this.minCostMethod = minCostMethod;
         potentialNodes.putAll(minCostMethod.getNodesWithPlanNum());
         for (int i = 0; i < minCostMethod.getTmpConsumers().size(); i++)
             providersPotentials.add(Optional.empty());
 
         for (int i = 0; i < minCostMethod.getTmpProviders().size(); i++)
             consumersPotentials.add(Optional.empty());
+        potentialsAlgo();
     }
 
-    public void potentialsAlgo() {
+    private void potentialsAlgo() {
         var pathCost = isOptimalSolution();
         while (isOptimalSolution().isPresent())
             optimizeSolution(getPathsCycle(pathCost.get()));
     }
 
-    public void calcPotentials() {
+    private void calcPotentials() {
         providersPotentials.set(0, Optional.of(0));
-        Map<Coords, Integer> costs = minCostMethod.getCostsModel().getCostsMatrix();
+        Map<Coords, Integer> costs = minCostMethod.getTmpCostsMatrix();
         while (providersPotentials.contains(Optional.empty()) || consumersPotentials.contains(Optional.empty())) {
             for (Coords coords : potentialNodes.keySet()) {
-                if (providersPotentials.get(coords.provider()).isPresent() && consumersPotentials.get(coords.consumer()).isEmpty())
+                if (providersPotentials.get(coords.provider()).isPresent() && consumersPotentials.get(coords.consumer()).isEmpty()) {
+
                     consumersPotentials.set(coords.consumer(), Optional.of(costs.get(coords) - providersPotentials.get(coords.provider()).get()));
-                else if (providersPotentials.get(coords.provider()).isEmpty() && consumersPotentials.get(coords.consumer()).isPresent())
+
+                } else if (providersPotentials.get(coords.provider()).isEmpty() && consumersPotentials.get(coords.consumer()).isPresent())
                     providersPotentials.set(coords.consumer(), Optional.of(costs.get(coords) - consumersPotentials.get(coords.provider()).get()));
             }
 
@@ -66,7 +72,7 @@ public class Potentials {
         return Optional.ofNullable(minUnusedPathCost);
     }
 
-    public List<Coords> getPathsCycle(Map.Entry<Coords, Integer> starterNode) {
+    private List<Coords> getPathsCycle(Map.Entry<Coords, Integer> starterNode) {
         Set<Coords> foundCoords = new HashSet<>();
         Stack<Coords> planNodeCoordsStack = new Stack<>();
         planNodeCoordsStack.push(starterNode.getKey());
