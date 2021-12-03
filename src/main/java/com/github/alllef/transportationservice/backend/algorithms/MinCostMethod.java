@@ -2,6 +2,7 @@ package com.github.alllef.transportationservice.backend.algorithms;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
 import com.github.alllef.transportationservice.backend.algorithms.utils.enums.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.enums.EntityType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -26,8 +27,8 @@ public class MinCostMethod {
     public MinCostMethod(CostsModel costsModel) {
         this.costsModel = costsModel;
         tmpCostsMatrix.putAll(costsModel.getCostsMatrix());
-        tmpProviders.addAll(costsModel.getConsumers());
-        tmpConsumers.addAll(costsModel.getProviders());
+        tmpProviders.addAll(costsModel.getProviders());
+        tmpConsumers.addAll(costsModel.getConsumers());
     }
 
     public int startAlgo() {
@@ -56,7 +57,7 @@ public class MinCostMethod {
     }
 
     private void minCostAlgo() {
-        while (blockedProvidersKeys.size() != tmpProviders.size() && tmpConsumers.size() != blockedConsumersKeys.size())
+        while (blockedProvidersKeys.size() != tmpProviders.size() || blockedConsumersKeys.size() != tmpConsumers.size())
             minCostIter();
     }
 
@@ -66,42 +67,42 @@ public class MinCostMethod {
                 .min(Comparator.comparingInt(Map.Entry::getValue))
                 .orElseThrow();
 
-        int consumerKey = leastNode.getKey().consumer();
         int providerKey = leastNode.getKey().provider();
+        int consumerKey = leastNode.getKey().consumer();
+
         int cost = Math.min(tmpProviders.get(providerKey), tmpConsumers.get(consumerKey));
 
         nodesWithPlanNum.put(leastNode.getKey(), cost);
 
-        tmpProviders.set(consumerKey, tmpProviders.get(consumerKey) - cost);
-        tmpConsumers.set(providerKey, tmpProviders.get(providerKey) - cost);
+        tmpProviders.set(providerKey, tmpProviders.get(providerKey) - cost);
+        tmpConsumers.set(consumerKey, tmpConsumers.get(consumerKey) - cost);
 
-        if (blockedProvidersKeys.size() == tmpProviders.size() - 1 && blockedConsumersKeys.size() == tmpConsumers.size() - 1) {
-            blockEntity(providerKey);
-            blockConsumer(consumerKey);
-        } else if (tmpProviders.get(consumerKey) == 0 && tmpConsumers.get(providerKey) == 0)
-            blockEntity(providerKey);
-        else if (tmpProviders.get(consumerKey) == 0)
-            blockConsumer(consumerKey);
+        blockEntities(providerKey, consumerKey);
+    }
+
+    private void blockEntities(int providerKey, int consumerKey) {
+        if (blockedProvidersKeys.size() == (tmpProviders.size() - 1) && blockedConsumersKeys.size() == (tmpConsumers.size() - 1)) {
+            blockEntity(providerKey, EntityType.PROVIDER);
+            blockEntity(consumerKey, EntityType.CONSUMER);
+        } else if (tmpProviders.get(providerKey) == 0 && tmpConsumers.get(consumerKey) == 0)
+            blockEntity(providerKey, EntityType.PROVIDER);
+        else if (tmpConsumers.get(consumerKey) == 0)
+            blockEntity(consumerKey, EntityType.CONSUMER);
         else
-            blockEntity(providerKey);
+            blockEntity(providerKey, EntityType.PROVIDER);
     }
 
-    private void blockEntity(int providerKey) {
+    private void blockEntity(int entityKey, EntityType type) {
         tmpCostsMatrix = tmpCostsMatrix.entrySet()
                 .stream()
-                .filter(node -> node.getKey().provider() != providerKey)
+                .filter(node -> {
+                    if (type == EntityType.PROVIDER) return node.getKey().provider() != entityKey;
+                    else return node.getKey().consumer() != entityKey;
+                })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        blockedConsumersKeys.add(providerKey);
-    }
-
-    private void blockConsumer(int consumerKey) {
-        tmpCostsMatrix = tmpCostsMatrix.entrySet()
-                .stream()
-                .filter(node -> node.getKey().consumer() != consumerKey)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        blockedProvidersKeys.add(consumerKey);
+        if (type == EntityType.CONSUMER) blockedConsumersKeys.add(entityKey);
+        else blockedProvidersKeys.add(entityKey);
     }
 
     private int calcTransportSum() {
