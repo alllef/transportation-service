@@ -10,17 +10,13 @@ import java.util.*;
 public class Potentials {
     private MinCostMethod minCostMethod;
     private Map<Coords, Integer> potentialNodes = new HashMap<>();
-    private List<Optional<Integer>> providersPotentials = new ArrayList<>();
-    private List<Optional<Integer>> consumersPotentials = new ArrayList<>();
+    private Map<Integer, Integer> providersPotentials = new HashMap<>();
+    private Map<Integer, Integer> consumersPotentials = new HashMap<>();
 
     public Potentials(MinCostMethod minCostMethod) {
         this.minCostMethod = minCostMethod;
         potentialNodes.putAll(minCostMethod.getNodesWithPlanNum());
-        for (int i = 0; i < minCostMethod.getTmpConsumers().size(); i++)
-            providersPotentials.add(Optional.empty());
 
-        for (int i = 0; i < minCostMethod.getTmpProviders().size(); i++)
-            consumersPotentials.add(Optional.empty());
         potentialsAlgo();
     }
 
@@ -31,16 +27,14 @@ public class Potentials {
     }
 
     private void calcPotentials() {
-        providersPotentials.set(0, Optional.of(0));
+        providersPotentials.put(0, 0);
         Map<Coords, Integer> costs = minCostMethod.getTmpCostsMatrix();
-        while (providersPotentials.contains(Optional.empty()) || consumersPotentials.contains(Optional.empty())) {
+        while (providersPotentials.size() < minCostMethod.getTmpProviders().size() || consumersPotentials.size() < minCostMethod.getTmpConsumers().size()) {
             for (Coords coords : potentialNodes.keySet()) {
-                if (providersPotentials.get(coords.provider()).isPresent() && consumersPotentials.get(coords.consumer()).isEmpty()) {
-
-                    consumersPotentials.set(coords.consumer(), Optional.of(costs.get(coords) - providersPotentials.get(coords.provider()).get()));
-
-                } else if (providersPotentials.get(coords.provider()).isEmpty() && consumersPotentials.get(coords.consumer()).isPresent())
-                    providersPotentials.set(coords.consumer(), Optional.of(costs.get(coords) - consumersPotentials.get(coords.provider()).get()));
+                if (providersPotentials.get(coords.provider()) != null && consumersPotentials.get(coords.consumer()) == null)
+                    consumersPotentials.put(coords.consumer(), costs.get(coords) - providersPotentials.get(coords.provider()));
+                    else if (providersPotentials.get(coords.provider()) != null && consumersPotentials.get(coords.consumer()) == null)
+                    providersPotentials.put(coords.consumer(), costs.get(coords) - consumersPotentials.get(coords.provider()));
             }
 
         }
@@ -56,7 +50,7 @@ public class Potentials {
 
         for (Coords key : costs.keySet()) {
             if (nodesWithPlanNum.get(key) == null) {
-                int pathCost = costs.get(key) - (providersPotentials.get(key.provider()).get() + consumersPotentials.get(key.consumer()).get());
+                int pathCost = costs.get(key) - (providersPotentials.get(key.provider()) + consumersPotentials.get(key.consumer()));
                 if (pathCost < 0) {
                     if (isOptimalSolution) {
                         minUnusedPathCost = new MapEntry<>(key, pathCost);
