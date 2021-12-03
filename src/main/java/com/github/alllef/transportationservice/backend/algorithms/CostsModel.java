@@ -22,8 +22,8 @@ public class CostsModel {
         this.providers = providers;
         this.consumers = consumers;
 
-        for (int tmpProvider = 0; tmpProvider < costsMatrix.length; tmpProvider++) {
-            for (int tmpConsumer  = 0; tmpConsumer < costsMatrix.length; tmpConsumer++) {
+        for (int tmpProvider = 0; tmpProvider < providers.size(); tmpProvider++) {
+            for (int tmpConsumer  = 0; tmpConsumer < consumers.size(); tmpConsumer++) {
                 this.costsMatrix.put(new Coords(tmpProvider,tmpConsumer), costsMatrix[tmpProvider][tmpConsumer]);
             }
         }

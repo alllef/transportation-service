@@ -6,6 +6,7 @@ import com.github.alllef.transportationservice.backend.algorithms.utils.enums.En
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.relational.core.sql.In;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,18 +49,20 @@ public class MinCostMethod {
             int additionalConsumer = AlgoUtils.sum(costsModel.getProviders()) - AlgoUtils.sum(costsModel.getConsumers());
             tmpConsumers.add(additionalConsumer);
             for (int i = 0; i < costsModel.getProviders().size(); i++)
-                tmpCostsMatrix.put(new Coords(i, costsModel.getConsumers().size()), -1);
+                tmpCostsMatrix.put(new Coords(i, costsModel.getConsumers().size()), Integer.MAX_VALUE);
         } else {
             int additionalProvider = AlgoUtils.sum(costsModel.getConsumers()) - AlgoUtils.sum(costsModel.getProviders());
-            for (int i = 0; i < costsModel.getConsumers().size(); i++)
-                tmpCostsMatrix.put(new Coords(costsModel.getProviders().size(), i), -1);
             tmpProviders.add(additionalProvider);
+            for (int i = 0; i < costsModel.getConsumers().size(); i++)
+                tmpCostsMatrix.put(new Coords(costsModel.getProviders().size(), i),
+                        Integer.MAX_VALUE);
         }
 
     }
 
     private void minCostAlgo() {
-        while (blockedProvidersKeys.size() != tmpProviders.size() || blockedConsumersKeys.size() != tmpConsumers.size())
+        while (blockedProvidersKeys.size() != tmpProviders.size()
+                || blockedConsumersKeys.size() != tmpConsumers.size())
             minCostIter();
     }
 
@@ -68,6 +71,11 @@ public class MinCostMethod {
                 .stream()
                 .min(Comparator.comparingInt(Map.Entry::getValue))
                 .orElseThrow();
+
+        if (leastNode.getValue() == Integer.MAX_VALUE) {
+            leastNode.setValue(0);
+            tmpCostsMatrix.put(leastNode.getKey(), leastNode.getValue());
+        }
 
         int providerKey = leastNode.getKey().provider();
         int consumerKey = leastNode.getKey().consumer();
