@@ -27,16 +27,15 @@ public class Potentials {
     }
 
     private void calcPotentials() {
-        providersPotentials.put(0, 0);
+        providersPotentials.put(1, 0);
         Map<Coords, Integer> costs = minCostMethod.getTmpCostsMatrix();
         while (providersPotentials.size() < minCostMethod.getTmpProviders().size() || consumersPotentials.size() < minCostMethod.getTmpConsumers().size()) {
             for (Coords coords : potentialNodes.keySet()) {
                 if (providersPotentials.get(coords.provider()) != null && consumersPotentials.get(coords.consumer()) == null)
                     consumersPotentials.put(coords.consumer(), costs.get(coords) - providersPotentials.get(coords.provider()));
-                    else if (providersPotentials.get(coords.provider()) != null && consumersPotentials.get(coords.consumer()) == null)
-                    providersPotentials.put(coords.consumer(), costs.get(coords) - consumersPotentials.get(coords.provider()));
+                else if (providersPotentials.get(coords.provider()) == null && consumersPotentials.get(coords.consumer()) != null)
+                    providersPotentials.put(coords.provider(), costs.get(coords) - consumersPotentials.get(coords.consumer()));
             }
-
         }
     }
 
