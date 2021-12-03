@@ -8,8 +8,8 @@ import java.util.*;
 public class Potentials {
     private MinCostMethod minCostMethod;
     private Map<Coords, Integer> potentialNodes = new HashMap<>();
-    private List<Optional<Integer>> providersPotentials;
-    private List<Optional<Integer>> consumersPotentials;
+    private List<Optional<Integer>> providersPotentials = new ArrayList<>();
+    private List<Optional<Integer>> consumersPotentials = new ArrayList<>();
 
     public Potentials() {
         potentialNodes.putAll(minCostMethod.getNodesWithPlanNum());
@@ -18,6 +18,12 @@ public class Potentials {
 
         for (int i = 0; i < minCostMethod.getTmpProviders().size(); i++)
             consumersPotentials.add(Optional.empty());
+    }
+
+    public void potentialsAlgo() {
+        var pathCost = isOptimalSolution();
+        while (isOptimalSolution().isPresent())
+            optimizeSolution(getPathsCycle(pathCost.get()));
     }
 
     public void calcPotentials() {
@@ -34,7 +40,8 @@ public class Potentials {
         }
     }
 
-    public boolean isOptimalSolution() {
+    public Optional<Map.Entry<Coords, Integer>> isOptimalSolution() {
+        this.calcPotentials();
         Map<Coords, Integer> costs = minCostMethod.getCostsModel().getCostsMatrix();
         Map<Coords, Integer> nodesWithPlanNum = minCostMethod.getNodesWithPlanNum();
         Map.Entry<Coords, Integer> minUnusedPathCost = null;
@@ -56,7 +63,7 @@ public class Potentials {
         if (minUnusedPathCost != null)
             potentialNodes.put(minUnusedPathCost.getKey(), minUnusedPathCost.getValue());
 
-        return isOptimalSolution;
+        return Optional.ofNullable(minUnusedPathCost);
     }
 
     public List<Coords> getPathsCycle(Map.Entry<Coords, Integer> starterNode) {
