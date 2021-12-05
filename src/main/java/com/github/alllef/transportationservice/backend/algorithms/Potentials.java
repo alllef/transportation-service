@@ -67,55 +67,39 @@ public class Potentials {
     }
 
     private List<Coords> getPathsCycle(Map.Entry<Coords, Integer> starterNode) {
+        Coords start = starterNode.getKey();
         Set<Coords> foundCoords = new HashSet<>();
         Stack<Coords> planNodeCoordsStack = new Stack<>();
         Coords coordsFromStart = null;
-        planNodeCoordsStack.push(starterNode.getKey());
-        foundCoords.add(starterNode.getKey());
+
+        Map<Coords, List<Coords>> nearestCoordsGraph = new CycleGraph(potentialNodes.keySet(), providersPotentials.size(),
+                consumersPotentials.size())
+                .getNearestCoords();
+
+        foundCoords.add(start);
+        planNodeCoordsStack.push(start);
         boolean isFoundFinal = false;
 
         do {
-            Coords coords = planNodeCoordsStack.peek();
+            Coords peekCoords = planNodeCoordsStack.peek();
             boolean foundNext = false;
-            for (EntityType entityType : EntityType.values()) {
-                int entitiesNum = 0;
 
-                switch (entityType) {
-                    case PROVIDER -> entitiesNum = providersPotentials.size();
-                    case CONSUMER -> entitiesNum = consumersPotentials.size();
-                }
+            for (Coords tmpCoords : nearestCoordsGraph.get(peekCoords)) {
+                if (!foundCoords.contains(tmpCoords)) {
+                    if (peekCoords.equals(start))
+                        coordsFromStart = tmpCoords;
 
-                for (int entityKey = 0; entityKey < entitiesNum; entityKey++) {
-                    Coords tmpCoords = null;
-
-                    switch (entityType) {
-                        case PROVIDER -> tmpCoords = new Coords(entityKey, coords.consumer());
-                        case CONSUMER -> tmpCoords = new Coords(coords.provider(), entityKey);
-                    }
-
-                    if (tmpCoords.equals(coords))
-                        continue;
-
-                    if (potentialNodes.get(tmpCoords) != null) {
-                        if (!foundCoords.contains(tmpCoords)) {
-                            if (coords.equals(starterNode.getKey()))
-                                coordsFromStart = tmpCoords;
-                            foundCoords.add(coords);
-                            planNodeCoordsStack.push(tmpCoords);
-                            foundNext = true;
-                            break;
-                        } else if (tmpCoords.equals(starterNode.getKey())) {
-                            if (coords.equals(coordsFromStart))
-                                continue;
-                            isFoundFinal = true;
-                            break;
-                        }
-                    }
-                }
-                if (foundNext || isFoundFinal)
+                    foundCoords.add(tmpCoords);
+                    planNodeCoordsStack.push(tmpCoords);
+                    foundNext = true;
                     break;
+                } else if (tmpCoords.equals(start) && !peekCoords.equals(coordsFromStart)) {
+                    isFoundFinal = true;
+                    break;
+                }
             }
-            if (!foundNext)
+
+            if (!foundNext && !isFoundFinal)
                 planNodeCoordsStack.pop();
 
         } while (!isFoundFinal);
