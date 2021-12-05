@@ -1,11 +1,13 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
+import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
 import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
 import com.github.alllef.transportationservice.backend.algorithms.utils.enums.EntityType;
 import com.helger.commons.collection.map.MapEntry;
 import lombok.Getter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 public class Potentials {
@@ -23,11 +25,16 @@ public class Potentials {
 
     private void potentialsAlgo() {
         var pathCost = isOptimalSolution();
-        while (isOptimalSolution().isPresent())
+        while (pathCost.isPresent()) {
             optimizeSolution(getPathsCycle(pathCost.get()));
+            pathCost = isOptimalSolution();
+        }
     }
 
     private void calcPotentials() {
+        providersPotentials.clear();
+        consumersPotentials.clear();
+
         providersPotentials.put(1, 0);
         Map<Coords, Integer> costs = minCostMethod.getTmpCostsMatrix();
         while (providersPotentials.size() < minCostMethod.getTmpProviders().size() || consumersPotentials.size() < minCostMethod.getTmpConsumers().size()) {
@@ -40,7 +47,7 @@ public class Potentials {
         }
     }
 
-    public Optional<Map.Entry<Coords, Integer>> isOptimalSolution() {
+    private Optional<Map.Entry<Coords, Integer>> isOptimalSolution() {
         this.calcPotentials();
         Map<Coords, Integer> costs = minCostMethod.getCostsModel().getCostsMatrix();
         Map<Coords, Integer> nodesWithPlanNum = minCostMethod.getNodesWithPlanNum();
@@ -60,13 +67,13 @@ public class Potentials {
                 }
             }
         }
-        if (minUnusedPathCost != null)
-            potentialNodes.put(minUnusedPathCost.getKey(), minUnusedPathCost.getValue());
 
         return Optional.ofNullable(minUnusedPathCost);
     }
 
     private List<Coords> getPathsCycle(Map.Entry<Coords, Integer> starterNode) {
+        potentialNodes.put(starterNode.getKey(), 0);
+
         Coords start = starterNode.getKey();
         Set<Coords> foundCoords = new HashSet<>();
         Stack<Coords> planNodeCoordsStack = new Stack<>();
@@ -123,6 +130,13 @@ public class Potentials {
             if (i % 2 == 0) potentialNodes.put(pathsCycle.get(i), potentialNodes.get(pathsCycle.get(i)) + changeNumber);
             else
                 potentialNodes.put(pathsCycle.get(i), potentialNodes.get(pathsCycle.get(i)) - changeNumber);
+        }
+
+        if (AlgoUtils.isDegenerate(providersPotentials.size(), consumersPotentials.size(), potentialNodes.size())) {
+            potentialNodes = potentialNodes.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue() != 0)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
     }
 
