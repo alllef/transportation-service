@@ -5,15 +5,12 @@ import com.github.alllef.transportationservice.backend.algorithms.MinCostMethod;
 import com.github.alllef.transportationservice.backend.algorithms.Potentials;
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class PotentialTests {
