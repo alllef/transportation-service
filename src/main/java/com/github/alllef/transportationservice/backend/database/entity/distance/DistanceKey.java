@@ -7,11 +7,11 @@ import java.io.Serializable;
 
 @Embeddable
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-class DistanceKey implements Serializable {
+public class DistanceKey implements Serializable {
     private Long providerId;
     private Long consumerId;
 }
