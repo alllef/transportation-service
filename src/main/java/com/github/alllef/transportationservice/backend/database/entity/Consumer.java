@@ -11,14 +11,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
-public class Consumer {
+public class Consumer extends TransportPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long consumerId;
-    private String name;
-    private String address;
     private int maxNeeds;
 
     @OneToMany(mappedBy = "consumer", fetch = FetchType.LAZY)

@@ -11,14 +11,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
-public class Provider {
+public class Provider extends TransportPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long providerId;
-    private String name;
-    private String address;
     private int maxCapacity;
 
     @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY)
