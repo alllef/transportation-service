@@ -5,7 +5,6 @@ import lombok.*;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

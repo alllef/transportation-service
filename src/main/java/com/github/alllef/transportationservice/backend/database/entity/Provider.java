@@ -19,6 +19,6 @@ public class Provider extends TransportPoint {
     private Long providerId;
     private int maxCapacity;
 
-    @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "provider", fetch = FetchType.EAGER)
     Set<Distance> distances;
 }
