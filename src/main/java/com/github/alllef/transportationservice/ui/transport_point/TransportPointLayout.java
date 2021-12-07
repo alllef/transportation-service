@@ -13,10 +13,12 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.shared.Registration;
+import lombok.Getter;
 
 import java.util.Optional;
 
 public class TransportPointLayout<T extends TransportPoint> extends VerticalLayout {
+    @Getter
     private final T transportPoint;
 
     private Label nameLabel;
@@ -54,4 +56,5 @@ public class TransportPointLayout<T extends TransportPoint> extends VerticalLayo
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
+
 }

@@ -1,5 +1,6 @@
 package com.github.alllef.transportationservice.ui;
 
+import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.service.ProviderService;
@@ -22,22 +23,15 @@ public class MainView extends VerticalLayout {
     private final TransportService transportService;
     private final ProviderService providerService;
 
-    private ComboBox<Transport> transportComboBox = new ComboBox<>("Transport");
     private ComboBox<Provider> providerComboBox = new ComboBox<>("Provider");
+    private ComboBox<Consumer> consumerComboBox = new ComboBox<>("Consumer");
 
     @PostConstruct
     public void afterConstruct() {
         addClassName("list-view");
         setSizeFull();
-        configureTransportComboBox();
         configureProviderComboBox();
-        add(transportComboBox, providerComboBox);
-    }
-
-    private void configureTransportComboBox() {
-        transportComboBox.setItems(transportService.findAll());
-        transportComboBox.setItemLabelGenerator(Transport::getName);
-        transportComboBox.addValueChangeListener(event -> add());
+        add(providerComboBox);
     }
 
     private void configureProviderComboBox() {
@@ -49,4 +43,5 @@ public class MainView extends VerticalLayout {
             add(transportPointLayout);
         });
     }
+
 }
