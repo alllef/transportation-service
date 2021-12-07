@@ -19,6 +19,6 @@ public class Consumer extends TransportPoint {
     private Long consumerId;
     private int maxNeeds;
 
-    @OneToMany(mappedBy = "consumer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "consumer", fetch = FetchType.EAGER)
     Set<Distance> distances;
 }

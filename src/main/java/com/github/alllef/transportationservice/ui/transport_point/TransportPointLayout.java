@@ -17,7 +17,7 @@ import lombok.Getter;
 
 import java.util.Optional;
 
-public class TransportPointLayout<T extends TransportPoint> extends VerticalLayout {
+public abstract class TransportPointLayout<T extends TransportPoint> extends VerticalLayout {
     @Getter
     private final T transportPoint;
 
