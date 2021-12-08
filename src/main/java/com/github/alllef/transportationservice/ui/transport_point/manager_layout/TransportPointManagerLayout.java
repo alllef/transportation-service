@@ -45,7 +45,7 @@ public class TransportPointManagerLayout<T extends TransportPoint> extends Verti
 
     protected void onButtonClicked(ClickEvent<?> clickEvent) {
         T currentValue = choosePointComboBox.getValue();
-        TransportPointLayout<?> transportPointLayout = transportPointLayoutFactory.createTransportLayout(choosePointComboBox.getValue());
+        TransportPointLayout<?> transportPointLayout = transportPointLayoutFactory.createTransportLayout(currentValue);
         transportPointLayout.addListener(TransportPointEvent.DeleteEvent.class,
                 deleteEvent -> this.remove(transportPointLayout));
         usedTransportPoints.add(currentValue);
