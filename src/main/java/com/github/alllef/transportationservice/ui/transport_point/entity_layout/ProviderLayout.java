@@ -1,8 +1,7 @@
-package com.github.alllef.transportationservice.ui.transport_point;
+package com.github.alllef.transportationservice.ui.transport_point.entity_layout;
 
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
-import com.github.alllef.transportationservice.backend.database.service.ProviderService;
 import com.github.alllef.transportationservice.backend.database.service.TransportService;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Label;

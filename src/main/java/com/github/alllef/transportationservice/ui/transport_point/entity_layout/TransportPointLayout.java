@@ -1,21 +1,17 @@
-package com.github.alllef.transportationservice.ui.transport_point;
+package com.github.alllef.transportationservice.ui.transport_point.entity_layout;
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.TransportPoint;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
-
-import java.util.Optional;
 
 public abstract class TransportPointLayout<T extends TransportPoint> extends VerticalLayout {
     @Getter

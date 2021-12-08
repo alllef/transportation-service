@@ -1,4 +1,4 @@
-package com.github.alllef.transportationservice.ui.transport_point;
+package com.github.alllef.transportationservice.ui.transport_point.entity_layout;
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 
