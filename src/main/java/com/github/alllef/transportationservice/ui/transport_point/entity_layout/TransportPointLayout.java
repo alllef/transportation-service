@@ -45,7 +45,7 @@ public abstract class TransportPointLayout<T extends TransportPoint> extends Ver
 
     private void configureButton() {
         deleteButton.addClickListener(buttonClickEvent ->
-                fireEvent(new TransportPointEvent.DeleteEvent(this)));
+                fireEvent(new TransportPointEvent.DeleteEvent(this,transportPoint)));
     }
 
     @Override

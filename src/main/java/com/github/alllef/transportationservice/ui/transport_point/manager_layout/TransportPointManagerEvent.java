@@ -25,11 +25,11 @@ public abstract class TransportPointManagerEvent extends ComponentEvent<Transpor
         }
     }
 
-    public static class ConsumerRemoveEvent extends TransportPointManagerEvent {
+    public static class ConsumerDeleteEvent extends TransportPointManagerEvent {
         @Getter
         private Consumer consumer;
 
-        public ConsumerRemoveEvent(TransportPointManagerLayout<?> source, Consumer consumer) {
+        public ConsumerDeleteEvent(TransportPointManagerLayout<?> source, Consumer consumer) {
             super(source);
             this.consumer = consumer;
         }
@@ -48,4 +48,13 @@ public abstract class TransportPointManagerEvent extends ComponentEvent<Transpor
         }
     }
 
+    public static class ProviderDeleteEvent extends TransportPointManagerEvent {
+        @Getter
+        private Provider provider;
+
+        public ProviderDeleteEvent(TransportPointManagerLayout<?> source, Provider provider) {
+            super(source);
+            this.provider = provider;
+        }
+    }
 }

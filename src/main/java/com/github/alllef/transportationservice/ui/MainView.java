@@ -26,15 +26,21 @@ public class MainView extends VerticalLayout {
 
     @PostConstruct
     public void afterConstruct() {
-        providerManagerLayout = transportPointManagerLayoutFactory.createProviderManagerLayout();
-        consumerManagerLayout = transportPointManagerLayoutFactory.createConsumerManagerLayout();
-        costsGridLayout = costsGridLayoutFactory.createCostsGridLayout();
-                consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class, event -> costsGridLayout.addColumn(event.getConsumer()));
+        this.createLayouts();
+
         providerManagerLayout.addListener(TransportPointManagerEvent.ProviderAddEvent.class, event -> costsGridLayout.addRow(event.getProvider(), event.getTransport()));
+        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderDeleteEvent.class, event ->costsGridLayout.removeRow(event.getProvider()));
+        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class, event -> costsGridLayout.addColumn(event.getConsumer()));
+        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerDeleteEvent.class, event -> costsGridLayout.removeColumn(event.getConsumer()));
 
         addClassName("list-view");
         setSizeFull();
         add(new HorizontalLayout(providerManagerLayout, costsGridLayout, consumerManagerLayout));
     }
 
+    private void createLayouts() {
+        providerManagerLayout = transportPointManagerLayoutFactory.createProviderManagerLayout();
+        consumerManagerLayout = transportPointManagerLayoutFactory.createConsumerManagerLayout();
+        costsGridLayout = costsGridLayoutFactory.createCostsGridLayout();
+    }
 }

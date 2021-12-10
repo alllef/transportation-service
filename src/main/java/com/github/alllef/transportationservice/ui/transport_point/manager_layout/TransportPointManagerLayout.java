@@ -16,10 +16,12 @@ import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
-public class TransportPointManagerLayout<T extends TransportPoint> extends VerticalLayout {
+public abstract class TransportPointManagerLayout<T extends TransportPoint> extends VerticalLayout {
     private final TransportPointLayoutFactory transportPointLayoutFactory;
 
     @Getter
@@ -51,6 +53,7 @@ public class TransportPointManagerLayout<T extends TransportPoint> extends Verti
         transportPointLayout.addListener(TransportPointEvent.DeleteEvent.class,
                 deleteEvent -> {
                     this.remove(transportPointLayout);
+                    onDeleteEvent(deleteEvent);
                 });
 
         transportPointLayout.addListener(TransportPointEvent.ProviderConfiguredEvent.class,
@@ -63,8 +66,18 @@ public class TransportPointManagerLayout<T extends TransportPoint> extends Verti
             fireEvent(new TransportPointManagerEvent.ConsumerAddEvent(this, consumer));
     }
 
+    protected void resetComboBoxValues(List<T> allValues){
+        List<T> values = allValues
+                .stream()
+                .filter(value -> !usedTransportPoints.contains(value))
+                .collect(Collectors.toList());
+        choosePointComboBox.setItems(values);
+    }
+
     @Override
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
+
+    protected abstract void onDeleteEvent(TransportPointEvent.DeleteEvent deleteEvent);
 }

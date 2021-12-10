@@ -2,14 +2,9 @@ package com.github.alllef.transportationservice.ui.transport_point.manager_layou
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.service.ConsumerService;
+import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointEvent;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayoutFactory;
 import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.shared.Registration;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer> {
     private final ConsumerService consumerService;
@@ -23,11 +18,16 @@ public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer>
     @Override
     protected void onButtonClicked(ClickEvent<?> clickEvent) {
         super.onButtonClicked(clickEvent);
-        List<Consumer> values = consumerService.findAll()
-                .stream()
-                .filter(value -> !usedTransportPoints.contains(value))
-                .collect(Collectors.toList());
-        choosePointComboBox.setItems(values);
+        resetComboBoxValues(consumerService.findAll());
+    }
+
+    @Override
+    protected void onDeleteEvent(TransportPointEvent.DeleteEvent deleteEvent) {
+        if (deleteEvent.getTransportPoint() instanceof Consumer consumer) {
+            usedTransportPoints.remove(consumer);
+            fireEvent(new TransportPointManagerEvent.ConsumerDeleteEvent(this, consumer));
+            resetComboBoxValues(consumerService.findAll());
+        }
     }
 
 }

@@ -28,6 +28,11 @@ public class CostsGridLayout extends VerticalLayout {
         costsGrid.setItems(getCostsGridRows());
     }
 
+    public void removeRow(Provider provider) {
+        providersWithTransport.remove(provider);
+        costsGrid.setItems(getCostsGridRows());
+    }
+
     public void addColumn(Consumer consumer) {
         consumers.add(consumer);
 
@@ -39,6 +44,12 @@ public class CostsGridLayout extends VerticalLayout {
                 .setKey(consumer.getName())
                 .setHeader(consumer.getName());
 
+        costsGrid.setItems(getCostsGridRows());
+    }
+
+    public void removeColumn(Consumer consumer) {
+        consumers.remove(consumer);
+        costsGrid.removeColumnByKey(consumer.getName());
         costsGrid.setItems(getCostsGridRows());
     }
 
