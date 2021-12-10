@@ -1,10 +1,8 @@
 package com.github.alllef.transportationservice.ui;
 
 import com.github.alllef.transportationservice.backend.database.service.ProviderService;
-import com.github.alllef.transportationservice.ui.transport_point.manager_layout.ConsumerManagerLayout;
-import com.github.alllef.transportationservice.ui.transport_point.manager_layout.ProviderManagerLayout;
-import com.github.alllef.transportationservice.ui.transport_point.manager_layout.TransportPointManagerLayout;
-import com.github.alllef.transportationservice.ui.transport_point.manager_layout.TransportPointManagerLayoutFactory;
+import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridLayout;
+import com.github.alllef.transportationservice.ui.transport_point.manager_layout.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -20,11 +18,19 @@ import javax.annotation.PostConstruct;
 public class MainView extends VerticalLayout {
     private final TransportPointManagerLayoutFactory transportPointManagerLayoutFactory;
 
+    private ProviderManagerLayout providerManagerLayout;
+    private ConsumerManagerLayout consumerManagerLayout;
+    private CostsGridLayout costsGridLayout;
+
     @PostConstruct
     public void afterConstruct() {
-        addClassName("list-view");
+        providerManagerLayout = transportPointManagerLayoutFactory.createProviderManagerLayout();
+        consumerManagerLayout = transportPointManagerLayoutFactory.createConsumerManagerLayout();
+        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class,event->costsGridLayout.addColumn(event.getConsumer()));
+
+    addClassName("list-view");
         setSizeFull();
-        add(new HorizontalLayout(transportPointManagerLayoutFactory.createProviderManagerLayout(), transportPointManagerLayoutFactory.createConsumerManagerLayout()));
+        add(new HorizontalLayout());
     }
 
 }

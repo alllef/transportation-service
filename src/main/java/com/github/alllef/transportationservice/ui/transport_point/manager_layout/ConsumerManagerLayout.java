@@ -4,6 +4,9 @@ import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.service.ConsumerService;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayoutFactory;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.shared.Registration;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +27,6 @@ public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer>
                 .stream()
                 .filter(value -> !usedTransportPoints.contains(value))
                 .collect(Collectors.toList());
-
         choosePointComboBox.setItems(values);
     }
 

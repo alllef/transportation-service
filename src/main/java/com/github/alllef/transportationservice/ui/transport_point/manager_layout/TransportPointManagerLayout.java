@@ -7,10 +7,13 @@ import com.github.alllef.transportationservice.ui.transport_point.entity_layout.
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayout;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayoutFactory;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.shared.Registration;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,7 +32,7 @@ public class TransportPointManagerLayout<T extends TransportPoint> extends Verti
 
     public TransportPointManagerLayout(TransportPointLayoutFactory transportPointLayoutFactory) {
         this.transportPointLayoutFactory = transportPointLayoutFactory;
-        add(choosePointComboBox,addButton);
+        add(choosePointComboBox, addButton);
         configureAddButton();
         configureChoosePointComboBox();
     }
@@ -46,9 +49,18 @@ public class TransportPointManagerLayout<T extends TransportPoint> extends Verti
     protected void onButtonClicked(ClickEvent<?> clickEvent) {
         T currentValue = choosePointComboBox.getValue();
         TransportPointLayout<?> transportPointLayout = transportPointLayoutFactory.createTransportLayout(currentValue);
+
         transportPointLayout.addListener(TransportPointEvent.DeleteEvent.class,
                 deleteEvent -> this.remove(transportPointLayout));
         usedTransportPoints.add(currentValue);
         add(transportPointLayout);
+
+        if(currentValue instanceof Consumer consumer)
+            fireEvent(new TransportPointManagerEvent.ConsumerAddEvent(this,consumer));
+    }
+
+    @Override
+    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
+        return getEventBus().addListener(eventType, listener);
     }
 }

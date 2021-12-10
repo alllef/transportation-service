@@ -45,4 +45,8 @@ public class DistanceService {
         return distanceRepo.findAllById(distanceKeys);
     }
 
+    public Distance getDistance(Provider provider,Consumer consumer){
+        return distanceRepo.findById(new DistanceKey(provider.getProviderId(),consumer.getConsumerId()))
+                .orElseThrow();
+    }
 }
