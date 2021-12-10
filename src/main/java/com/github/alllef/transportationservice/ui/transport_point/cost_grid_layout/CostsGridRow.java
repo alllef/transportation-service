@@ -16,5 +16,5 @@ import java.util.Set;
 public class CostsGridRow {
     private Provider provider;
     private Transport transport;
-    private Map<Consumer,Integer> consumersWithTransportShipments;
+    private Set<Consumer> consumers;
 }

@@ -5,6 +5,7 @@ import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.entity.distance.Distance;
 import com.github.alllef.transportationservice.backend.database.service.DistanceService;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -17,10 +18,12 @@ public class CostsGridLayout extends VerticalLayout {
     private Map<Provider, Transport> providersWithTransport = new HashMap<>();
     private Set<Consumer> consumers = new HashSet<>();
 
+    private Button calculateResultButton = new Button("Calculate optimal transport shipments");
+
     public CostsGridLayout(DistanceService distanceService) {
         this.distanceService = distanceService;
         configureGrid();
-        add(costsGrid);
+        add(costsGrid, calculateResultButton);
     }
 
     public void addRow(Provider provider, Transport transport) {
@@ -71,4 +74,9 @@ public class CostsGridLayout extends VerticalLayout {
 
         costsGrid.setSizeFull();
     }
+
+    private void configureButton() {
+        calculateResultButton.addClickListener(buttonClickEvent ->fireEvent())
+    }
+
 }

@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResultsGridLayout extends VerticalLayout {
-    private Grid<CostsGridRow> resultsGrid = new Grid<>();
+    private Grid<ResultsGridRow> resultsGrid = new Grid<>();
     private Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity = new HashMap<>();
     private Map<Consumer, Integer> consumersWithCapacity = new HashMap<>();
     private final DistanceService distanceService;
@@ -34,7 +34,11 @@ public class ResultsGridLayout extends VerticalLayout {
                 .setHeader("Provider names");
 
         for (Consumer consumer : consumersWithCapacity.keySet()) {
-            resultsGrid.addColumn(row -> row.getConsumersWithTransportShipments().get(consumer))
+            resultsGrid.addColumn(row -> {
+                        if (row.getConsumersWithShipments().containsKey(consumer))
+                            return row.getConsumersWithShipments().get(consumer);
+                        return 0;
+                    })
                     .setKey(consumer.getName())
                     .setHeader(consumer.getName());
         }
@@ -43,7 +47,7 @@ public class ResultsGridLayout extends VerticalLayout {
         resultsGrid.setItems(getRows());
     }
 
-    private List<CostsGridRow> getRows() {
+    private List<ResultsGridRow> getRows() {
         List<Provider> providers = providersWithTransportAndCapacity.keySet()
                 .stream()
                 .toList();
@@ -69,14 +73,14 @@ public class ResultsGridLayout extends VerticalLayout {
         transportAlgo.startAlgo();
 
         Map<Coords, Integer> nodesWithShipments = transportAlgo.getNodesWithShipments();
-        List<CostsGridRow> rowsList = new ArrayList<>();
+        List<ResultsGridRow> rowsList = new ArrayList<>();
 
         for (int i = 0; i < providers.size(); i++) {
-            CostsGridRow row = new CostsGridRow(providers.get(i), providersWithTransportAndCapacity.get(providers.get(i)).getKey(), new HashMap<>());
+            ResultsGridRow row = new ResultsGridRow(providers.get(i), new HashMap<>());
             for (int j = 0; j < consumers.size(); j++) {
                 Coords tmp = new Coords(i, j);
                 if (nodesWithShipments.containsKey(tmp))
-                    row.getConsumersWithTransportShipments().put(consumers.get(j), nodesWithShipments.get(tmp));
+                    row.getConsumersWithShipments().put(consumers.get(j), nodesWithShipments.get(tmp));
             }
         }
 
