@@ -2,6 +2,7 @@ package com.github.alllef.transportationservice.ui.transport_point.manager_layou
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
+import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayout;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -27,10 +28,13 @@ public abstract class TransportPointManagerEvent extends ComponentEvent<Transpor
     public static class ProviderAddEvent extends TransportPointManagerEvent {
         @Getter
         private Provider provider;
+        @Getter
+        private Transport transport;
 
-        public ProviderAddEvent(TransportPointManagerLayout<?> source, Provider provider) {
+        public ProviderAddEvent(TransportPointManagerLayout<?> source, Provider provider,Transport transport) {
             super(source);
             this.provider = provider;
+            this.transport=transport;
         }
     }
 

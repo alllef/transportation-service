@@ -26,11 +26,13 @@ public class MainView extends VerticalLayout {
     public void afterConstruct() {
         providerManagerLayout = transportPointManagerLayoutFactory.createProviderManagerLayout();
         consumerManagerLayout = transportPointManagerLayoutFactory.createConsumerManagerLayout();
-        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class,event->costsGridLayout.addColumn(event.getConsumer()));
 
-    addClassName("list-view");
+        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class, event -> costsGridLayout.addColumn(event.getConsumer()));
+        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderAddEvent.class, event -> costsGridLayout.addRow(event.getProvider(), event.getTransport()));
+
+        addClassName("list-view");
         setSizeFull();
-        add(new HorizontalLayout());
+        add(new HorizontalLayout(providerManagerLayout, costsGridLayout, consumerManagerLayout));
     }
 
 }

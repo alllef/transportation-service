@@ -8,12 +8,14 @@ import com.github.alllef.transportationservice.backend.database.service.Distance
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CostsGridLayout extends VerticalLayout {
     private final DistanceService distanceService;
-    Grid<CostsGridRow> costsGrid = new Grid<>();
+    private Grid<CostsGridRow> costsGrid = new Grid<>();
+
+    private Map<Provider, Transport> providersWithTransport = new HashMap<>();
+    private Set<Consumer> consumers = new HashSet<>();
 
     public CostsGridLayout(DistanceService distanceService) {
         this.distanceService = distanceService;
@@ -21,7 +23,14 @@ public class CostsGridLayout extends VerticalLayout {
         add(costsGrid);
     }
 
+    public void addRow(Provider provider, Transport transport) {
+        providersWithTransport.put(provider, transport);
+        costsGrid.setItems(getCostsGridRows());
+    }
+
     public void addColumn(Consumer consumer) {
+        consumers.add(consumer);
+
         costsGrid.addColumn(row -> {
                     Provider tmpProvider = row.getProvider();
                     Distance distance = distanceService.getDistance(tmpProvider, consumer);
@@ -29,14 +38,23 @@ public class CostsGridLayout extends VerticalLayout {
                 })
                 .setKey(consumer.getName())
                 .setHeader(consumer.getName());
+
+        costsGrid.setItems(getCostsGridRows());
     }
 
-    private void addRow(Provider provider) {
+    private List<CostsGridRow> getCostsGridRows() {
+        List<CostsGridRow> rows = new ArrayList<>();
+        for (var providerTransportEntry : providersWithTransport.entrySet()) {
+            CostsGridRow row = new CostsGridRow(providerTransportEntry.getKey(), providerTransportEntry.getValue(), consumers);
+            rows.add(row);
+        }
 
+        return rows;
     }
 
     private void configureGrid() {
-        costsGrid.addColumn(row->row.getProvider().getName())
+        costsGrid.addColumn(row -> row.getProvider()
+                        .getName())
                 .setKey("Providers")
                 .setHeader("Provider names");
     }
