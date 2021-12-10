@@ -5,10 +5,13 @@ import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.entity.distance.Distance;
 import com.github.alllef.transportationservice.backend.database.entity.distance.DistanceKey;
+import com.github.alllef.transportationservice.backend.database.repository.ConsumerRepo;
 import com.github.alllef.transportationservice.backend.database.repository.DistanceRepo;
+import com.github.alllef.transportationservice.backend.database.repository.ProviderRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,8 +33,8 @@ public class DistanceService {
 
         List<Distance> distances = this.getDistances(providers, consumers);
         return distances.stream()
-                .collect(Collectors.toMap(Function.identity(),(distance)->
-                        calcTransportationPrice(distance,providersWithTransport.get(distance.getProvider()))));
+                .collect(Collectors.toMap(Function.identity(), (distance) ->
+                        calcTransportationPrice(distance, providersWithTransport.get(distance.getProvider()))));
     }
 
     public List<Distance> getDistances(List<Provider> providers, List<Consumer> consumers) {
@@ -45,8 +48,9 @@ public class DistanceService {
         return distanceRepo.findAllById(distanceKeys);
     }
 
-    public Distance getDistance(Provider provider,Consumer consumer){
-        return distanceRepo.findById(new DistanceKey(provider.getProviderId(),consumer.getConsumerId()))
+    public Distance getDistance(Provider provider, Consumer consumer) {
+        return distanceRepo.findById(new DistanceKey(provider.getProviderId(), consumer.getConsumerId()))
                 .orElseThrow();
     }
+
 }

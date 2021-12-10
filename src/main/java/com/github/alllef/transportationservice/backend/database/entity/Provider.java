@@ -20,5 +20,6 @@ public class Provider extends TransportPoint {
     private int maxCapacity;
 
     @OneToMany(mappedBy = "provider", fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Exclude
     Set<Distance> distances;
 }

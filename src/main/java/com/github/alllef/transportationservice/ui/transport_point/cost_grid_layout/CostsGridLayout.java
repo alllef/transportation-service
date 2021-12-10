@@ -57,5 +57,7 @@ public class CostsGridLayout extends VerticalLayout {
                         .getName())
                 .setKey("Providers")
                 .setHeader("Provider names");
+
+        costsGrid.setSizeFull();
     }
 }

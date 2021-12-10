@@ -48,11 +48,13 @@ public class TransportPointManagerLayout<T extends TransportPoint> extends Verti
         T currentValue = choosePointComboBox.getValue();
         TransportPointLayout<?> transportPointLayout = transportPointLayoutFactory.createTransportLayout(currentValue);
 
-        transportPointLayout.addListener(TransportPointEvent.ProviderConfiguredEvent.class,
-                deleteEvent -> this.remove(transportPointLayout));
+        transportPointLayout.addListener(TransportPointEvent.DeleteEvent.class,
+                deleteEvent -> {
+                    this.remove(transportPointLayout);
+                });
 
         transportPointLayout.addListener(TransportPointEvent.ProviderConfiguredEvent.class,
-                configuredEvent ->fireEvent(new TransportPointManagerEvent.ProviderAddEvent(this,configuredEvent.getProvider(),configuredEvent.getTransport())));
+                configuredEvent -> fireEvent(new TransportPointManagerEvent.ProviderAddEvent(this, configuredEvent.getProvider(), configuredEvent.getTransport())));
 
         usedTransportPoints.add(currentValue);
         add(transportPointLayout);
