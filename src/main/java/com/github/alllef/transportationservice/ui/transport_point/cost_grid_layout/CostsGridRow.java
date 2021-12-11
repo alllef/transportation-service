@@ -5,10 +5,7 @@ import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Value;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Data

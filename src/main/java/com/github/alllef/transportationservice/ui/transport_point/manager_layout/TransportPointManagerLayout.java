@@ -1,6 +1,7 @@
 package com.github.alllef.transportationservice.ui.transport_point.manager_layout;
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
+import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.TransportPoint;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointEvent;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayout;
@@ -63,6 +64,10 @@ public abstract class TransportPointManagerLayout<T extends TransportPoint> exte
         transportPointLayout.addListener(TransportPointEvent.CapacityChangedEvent.class,
                 event -> {
                     T tmpTransportPoint = (T) event.getTransportPoint();
+                    if (tmpTransportPoint instanceof Provider tmpProvider)
+                        fireEvent(new TransportPointManagerEvent.ProviderCapacityChangedEvent(this, tmpProvider, event.getCapacity()));
+                    else if (tmpTransportPoint instanceof Consumer tmpConsumer)
+                        fireEvent(new TransportPointManagerEvent.ConsumerCapacityChangedEvent(this, tmpConsumer, event.getCapacity()));
                     usedTransportPoints.put(tmpTransportPoint, event.getCapacity());
                 });
 

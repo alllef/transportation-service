@@ -48,14 +48,17 @@ public class MainView extends VerticalLayout {
     private void configureListeners() {
         providerManagerLayout.addListener(TransportPointManagerEvent.ProviderAddEvent.class, event -> costsGridLayout.addRow(event.getProvider(), event.getTransport()));
         providerManagerLayout.addListener(TransportPointManagerEvent.ProviderDeleteEvent.class, event -> costsGridLayout.removeRow(event.getProvider()));
+        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderCapacityChangedEvent.class, event -> costsGridLayout.onProviderCapacityUpdated(event.getProvider(), event.getCapacity()));
+
         consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class, event -> costsGridLayout.addColumn(event.getConsumer()));
         consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerDeleteEvent.class, event -> costsGridLayout.removeColumn(event.getConsumer()));
+        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerCapacityChangedEvent.class, event -> costsGridLayout.onConsumerCapacityUpdated(event.getConsumer(), event.getCapacity()));
+
         costsGridLayout.addListener(CostsGridEvent.CalculationEvent.class, calculationEvent -> {
             if (resultsGridLayout == null) {
                 resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
                 add(resultsGridLayout);
             }
-
             resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
         });
     }

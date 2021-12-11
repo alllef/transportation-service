@@ -18,8 +18,8 @@ public class CostsGridLayout extends VerticalLayout {
     private final DistanceService distanceService;
     private Grid<CostsGridRow> costsGrid = new Grid<>();
 
-    private Map<Provider, Transport> providersWithTransport = new HashMap<>();
-    private Set<Consumer> consumers = new HashSet<>();
+    private Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity = new HashMap<>();
+    private Map<Consumer, Integer> consumersWithCapacity = new HashMap<>();
 
     private Button calculateResultButton = new Button("Calculate optimal transport shipments");
 
@@ -31,39 +31,50 @@ public class CostsGridLayout extends VerticalLayout {
     }
 
     public void addRow(Provider provider, Transport transport) {
-        providersWithTransport.put(provider, transport);
+        providersWithTransportAndCapacity.put(provider, Map.entry(transport,1));
         costsGrid.setItems(getCostsGridRows());
     }
 
+    public void onProviderCapacityUpdated(Provider provider, int capacity){
+        Transport providerTransport = providersWithTransportAndCapacity.get(provider)
+                .getKey();
+
+        providersWithTransportAndCapacity.put(provider,Map.entry(providerTransport,capacity));
+    }
+
+    public void onConsumerCapacityUpdated(Consumer consumer, int capacity){
+        consumersWithCapacity.put(consumer,capacity);
+    costsGrid.getColumnByKey(consumer.getName())
+            .setHeader(consumer.getName()+"\n"+capacity);
+    }
+
     public void removeRow(Provider provider) {
-        providersWithTransport.remove(provider);
+        providersWithTransportAndCapacity.remove(provider);
         costsGrid.setItems(getCostsGridRows());
     }
 
     public void addColumn(Consumer consumer) {
-        consumers.add(consumer);
-
-        costsGrid.addColumn(row -> {
-                    Provider tmpProvider = row.getProvider();
-                    Distance distance = distanceService.getDistance(tmpProvider, consumer);
-                    return distanceService.calcTransportationPrice(distance, row.getTransport());
-                })
-                .setKey(consumer.getName())
-                .setHeader(consumer.getName());
+            costsGrid.addColumn(row -> {
+                        Provider tmpProvider = row.getProvider();
+                        Distance distance = distanceService.getDistance(tmpProvider, consumer);
+                        return distanceService.calcTransportationPrice(distance, row.getTransport());
+                    })
+                    .setKey(consumer.getName())
+                    .setHeader(consumer.getName());
 
         costsGrid.setItems(getCostsGridRows());
     }
 
     public void removeColumn(Consumer consumer) {
-        consumers.remove(consumer);
+        consumersWithCapacity.remove(consumer);
         costsGrid.removeColumnByKey(consumer.getName());
         costsGrid.setItems(getCostsGridRows());
     }
 
     private List<CostsGridRow> getCostsGridRows() {
         List<CostsGridRow> rows = new ArrayList<>();
-        for (var providerTransportEntry : providersWithTransport.entrySet()) {
-            CostsGridRow row = new CostsGridRow(providerTransportEntry.getKey(), providerTransportEntry.getValue(), consumers);
+        for (var providerTransportEntry : providersWithTransportAndCapacity.entrySet()) {
+            CostsGridRow row = new CostsGridRow(providerTransportEntry.getKey(), providerTransportEntry.getValue().getKey(), consumersWithCapacity.keySet());
             rows.add(row);
         }
 

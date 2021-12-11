@@ -17,7 +17,7 @@ public abstract class TransportPointManagerEvent extends ComponentEvent<Transpor
 
     public static class ConsumerAddEvent extends TransportPointManagerEvent {
         @Getter
-        private Consumer consumer;
+        private final Consumer consumer;
 
         public ConsumerAddEvent(TransportPointManagerLayout<?> source, Consumer consumer) {
             super(source);
@@ -25,9 +25,33 @@ public abstract class TransportPointManagerEvent extends ComponentEvent<Transpor
         }
     }
 
+    @Getter
+    public static class ProviderCapacityChangedEvent extends TransportPointManagerEvent {
+        private final Provider provider;
+        private final int capacity;
+
+        public ProviderCapacityChangedEvent(TransportPointManagerLayout<?> source, Provider provider, int capacity) {
+            super(source);
+            this.provider = provider;
+            this.capacity = capacity;
+        }
+    }
+
+    @Getter
+    public static class ConsumerCapacityChangedEvent extends TransportPointManagerEvent {
+        private final Consumer consumer;
+        private final int capacity;
+
+        public ConsumerCapacityChangedEvent(TransportPointManagerLayout<?> source, Consumer consumer, int capacity) {
+            super(source);
+            this.consumer = consumer;
+            this.capacity = capacity;
+        }
+    }
+
     public static class ConsumerDeleteEvent extends TransportPointManagerEvent {
         @Getter
-        private Consumer consumer;
+        private final Consumer consumer;
 
         public ConsumerDeleteEvent(TransportPointManagerLayout<?> source, Consumer consumer) {
             super(source);
@@ -35,22 +59,21 @@ public abstract class TransportPointManagerEvent extends ComponentEvent<Transpor
         }
     }
 
+    @Getter
     public static class ProviderAddEvent extends TransportPointManagerEvent {
-        @Getter
-        private Provider provider;
-        @Getter
-        private Transport transport;
+        private final Provider provider;
+        private final Transport transport;
 
-        public ProviderAddEvent(TransportPointManagerLayout<?> source, Provider provider,Transport transport) {
+        public ProviderAddEvent(TransportPointManagerLayout<?> source, Provider provider, Transport transport) {
             super(source);
             this.provider = provider;
-            this.transport=transport;
+            this.transport = transport;
         }
     }
 
     public static class ProviderDeleteEvent extends TransportPointManagerEvent {
         @Getter
-        private Provider provider;
+        private final Provider provider;
 
         public ProviderDeleteEvent(TransportPointManagerLayout<?> source, Provider provider) {
             super(source);

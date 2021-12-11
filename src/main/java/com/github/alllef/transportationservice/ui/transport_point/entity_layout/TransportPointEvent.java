@@ -35,10 +35,9 @@ public abstract class TransportPointEvent extends ComponentEvent<TransportPointL
         }
     }
 
+    @Getter
     public static class ProviderConfiguredEvent extends TransportPointEvent {
-        @Getter
         private Transport transport;
-        @Getter
         private Provider provider;
 
         public ProviderConfiguredEvent(TransportPointLayout<?> source, Transport transport, Provider provider) {

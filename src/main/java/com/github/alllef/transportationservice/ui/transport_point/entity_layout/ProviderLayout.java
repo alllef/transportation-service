@@ -38,7 +38,7 @@ public class ProviderLayout extends TransportPointLayout<Provider> {
         transportComboBox.setHelperText("You haven't choose transport yet");
         transportComboBox.setClearButtonVisible(true);
         transportComboBox.setItemLabelGenerator(transport ->
-                transport.getName() + " " + transport.getFuelConsumptionPerKm() + "litres/km");
+                transport.getName() + " " + transport.getFuelConsumptionPerKm() + "liters/km");
         transportComboBox.addValueChangeListener(event -> {
             transportLabel.setText(event.getValue()
                     .getName());
