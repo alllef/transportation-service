@@ -1,13 +1,18 @@
 package com.github.alllef.transportationservice.ui.transport_point.manager_layout;
 
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
+import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.service.ProviderService;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointEvent;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayoutFactory;
 import com.vaadin.flow.component.ClickEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProviderManagerLayout extends TransportPointManagerLayout<Provider> {
     private final ProviderService providerService;
+    private Map<Provider, Transport> providerTransportMap = new HashMap<>();
 
     public ProviderManagerLayout(TransportPointLayoutFactory transportPointLayoutFactory, ProviderService providerService) {
         super(transportPointLayoutFactory);
@@ -28,5 +33,20 @@ public class ProviderManagerLayout extends TransportPointManagerLayout<Provider>
             fireEvent(new TransportPointManagerEvent.ProviderDeleteEvent(this, provider));
             resetComboBoxValues(providerService.findAll());
         }
+    }
+
+    @Override
+    protected void onProviderConfiguredEvent(TransportPointEvent.ProviderConfiguredEvent event) {
+        providerTransportMap.put(event.getProvider(), event.getTransport());
+    }
+
+    public Map<Provider, Map.Entry<Transport, Integer>> getProvidersWithTransportAndCapacity(){
+        Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity = new HashMap<>();
+
+        for(Provider provider:providerTransportMap.keySet()){
+            providersWithTransportAndCapacity.put(provider,Map.entry(providerTransportMap.get(provider),usedTransportPoints.get(provider)));
+        }
+
+        return providersWithTransportAndCapacity;
     }
 }

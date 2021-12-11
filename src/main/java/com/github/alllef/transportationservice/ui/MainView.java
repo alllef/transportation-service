@@ -1,9 +1,12 @@
 package com.github.alllef.transportationservice.ui;
 
 import com.github.alllef.transportationservice.backend.database.service.ProviderService;
+import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridEvent;
 import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridLayout;
 import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridLayoutFactory;
 import com.github.alllef.transportationservice.ui.transport_point.manager_layout.*;
+import com.github.alllef.transportationservice.ui.transport_point.results_grid_layout.ResultsGridLayout;
+import com.github.alllef.transportationservice.ui.transport_point.results_grid_layout.ResultsGridLayoutFactory;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -19,19 +22,17 @@ import javax.annotation.PostConstruct;
 public class MainView extends VerticalLayout {
     private final TransportPointManagerLayoutFactory transportPointManagerLayoutFactory;
     private final CostsGridLayoutFactory costsGridLayoutFactory;
+    private final ResultsGridLayoutFactory resultsGridLayoutFactory;
 
     private ProviderManagerLayout providerManagerLayout;
     private ConsumerManagerLayout consumerManagerLayout;
     private CostsGridLayout costsGridLayout;
+    private ResultsGridLayout resultsGridLayout;
 
     @PostConstruct
     public void afterConstruct() {
-        this.createLayouts();
-
-        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderAddEvent.class, event -> costsGridLayout.addRow(event.getProvider(), event.getTransport()));
-        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderDeleteEvent.class, event ->costsGridLayout.removeRow(event.getProvider()));
-        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class, event -> costsGridLayout.addColumn(event.getConsumer()));
-        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerDeleteEvent.class, event -> costsGridLayout.removeColumn(event.getConsumer()));
+        createLayouts();
+        configureListeners();
 
         addClassName("list-view");
         setSizeFull();
@@ -42,5 +43,20 @@ public class MainView extends VerticalLayout {
         providerManagerLayout = transportPointManagerLayoutFactory.createProviderManagerLayout();
         consumerManagerLayout = transportPointManagerLayoutFactory.createConsumerManagerLayout();
         costsGridLayout = costsGridLayoutFactory.createCostsGridLayout();
+    }
+
+    private void configureListeners() {
+        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderAddEvent.class, event -> costsGridLayout.addRow(event.getProvider(), event.getTransport()));
+        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderDeleteEvent.class, event -> costsGridLayout.removeRow(event.getProvider()));
+        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerAddEvent.class, event -> costsGridLayout.addColumn(event.getConsumer()));
+        consumerManagerLayout.addListener(TransportPointManagerEvent.ConsumerDeleteEvent.class, event -> costsGridLayout.removeColumn(event.getConsumer()));
+        costsGridLayout.addListener(CostsGridEvent.CalculationEvent.class, calculationEvent -> {
+            if (resultsGridLayout == null) {
+                resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
+                add(resultsGridLayout);
+            }
+
+            resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
+        });
     }
 }

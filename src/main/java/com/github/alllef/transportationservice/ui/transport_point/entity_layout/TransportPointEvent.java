@@ -14,11 +14,24 @@ public abstract class TransportPointEvent extends ComponentEvent<TransportPointL
 
     public static class DeleteEvent extends TransportPointEvent {
         @Getter
-        TransportPoint transportPoint;
+        private final TransportPoint transportPoint;
 
-        public DeleteEvent(TransportPointLayout<?> source,TransportPoint transportPoint) {
+        public DeleteEvent(TransportPointLayout<?> source, TransportPoint transportPoint) {
             super(source);
             this.transportPoint = transportPoint;
+        }
+    }
+
+    @Getter
+    public static class CapacityChangedEvent extends TransportPointEvent {
+
+        private final TransportPoint transportPoint;
+        private final int capacity;
+
+        public CapacityChangedEvent(TransportPointLayout<?> source, TransportPoint transportPoint, int capacity) {
+            super(source);
+            this.transportPoint = transportPoint;
+            this.capacity = capacity;
         }
     }
 

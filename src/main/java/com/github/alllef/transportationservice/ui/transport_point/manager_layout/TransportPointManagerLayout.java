@@ -15,9 +15,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -25,7 +23,7 @@ public abstract class TransportPointManagerLayout<T extends TransportPoint> exte
     private final TransportPointLayoutFactory transportPointLayoutFactory;
 
     @Getter
-    protected Set<T> usedTransportPoints = new HashSet<>();
+    protected Map<T, Integer> usedTransportPoints = new HashMap<>();
 
     protected ComboBox<T> choosePointComboBox = new ComboBox<>("Choose entity");
     private Button addButton = new Button("Add");
@@ -57,26 +55,38 @@ public abstract class TransportPointManagerLayout<T extends TransportPoint> exte
                 });
 
         transportPointLayout.addListener(TransportPointEvent.ProviderConfiguredEvent.class,
-                configuredEvent -> fireEvent(new TransportPointManagerEvent.ProviderAddEvent(this, configuredEvent.getProvider(), configuredEvent.getTransport())));
+                configuredEvent -> {
+                    fireEvent(new TransportPointManagerEvent.ProviderAddEvent(this, configuredEvent.getProvider(), configuredEvent.getTransport()));
+                    onProviderConfiguredEvent(configuredEvent);
+                });
 
-        usedTransportPoints.add(currentValue);
+        transportPointLayout.addListener(TransportPointEvent.CapacityChangedEvent.class,
+                event -> {
+                    T tmpTransportPoint = (T) event.getTransportPoint();
+                    usedTransportPoints.put(tmpTransportPoint, event.getCapacity());
+                });
+
+        usedTransportPoints.put(currentValue, 1);
         add(transportPointLayout);
 
         if (currentValue instanceof Consumer consumer)
             fireEvent(new TransportPointManagerEvent.ConsumerAddEvent(this, consumer));
     }
 
-    protected void resetComboBoxValues(List<T> allValues){
+    protected void resetComboBoxValues(List<T> allValues) {
         List<T> values = allValues
                 .stream()
-                .filter(value -> !usedTransportPoints.contains(value))
+                .filter(value -> !usedTransportPoints.containsKey(value))
                 .collect(Collectors.toList());
         choosePointComboBox.setItems(values);
     }
 
     @Override
-    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
+    public <S extends ComponentEvent<?>> Registration addListener(Class<S> eventType, ComponentEventListener<S> listener) {
         return getEventBus().addListener(eventType, listener);
+    }
+
+    protected void onProviderConfiguredEvent(TransportPointEvent.ProviderConfiguredEvent event) {
     }
 
     protected abstract void onDeleteEvent(TransportPointEvent.DeleteEvent deleteEvent);

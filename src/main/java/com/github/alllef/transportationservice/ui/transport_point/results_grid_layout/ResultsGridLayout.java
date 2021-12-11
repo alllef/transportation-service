@@ -8,21 +8,25 @@ import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.entity.distance.Distance;
 import com.github.alllef.transportationservice.backend.database.service.DistanceService;
-import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridRow;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ResultsGridLayout extends VerticalLayout {
-    private Grid<ResultsGridRow> resultsGrid = new Grid<>();
-    private Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity = new HashMap<>();
-    private Map<Consumer, Integer> consumersWithCapacity = new HashMap<>();
+    private final Grid<ResultsGridRow> resultsGrid = new Grid<>();
+    private final Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity;
+    private final Map<Consumer, Integer> consumersWithCapacity;
     private final DistanceService distanceService;
 
-    protected ResultsGridLayout(DistanceService distanceService) {
+    protected ResultsGridLayout(DistanceService distanceService, Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity, Map<Consumer, Integer> consumersWithCapacity) {
         this.distanceService = distanceService;
+        this.providersWithTransportAndCapacity = providersWithTransportAndCapacity;
+        this.consumersWithCapacity = consumersWithCapacity;
         configureGrid();
         add(resultsGrid);
     }
@@ -62,7 +66,7 @@ public class ResultsGridLayout extends VerticalLayout {
                 .collect(Collectors.toList());
 
         List<Integer> consumersCapacity = consumers.stream()
-                .map(consumer -> consumersWithCapacity.get(consumer))
+                .map(consumersWithCapacity::get)
                 .toList();
 
         int[][] costs = getCosts(providers, consumers);
@@ -82,6 +86,7 @@ public class ResultsGridLayout extends VerticalLayout {
                 if (nodesWithShipments.containsKey(tmp))
                     row.getConsumersWithShipments().put(consumers.get(j), nodesWithShipments.get(tmp));
             }
+            rowsList.add(row);
         }
 
         return rowsList;

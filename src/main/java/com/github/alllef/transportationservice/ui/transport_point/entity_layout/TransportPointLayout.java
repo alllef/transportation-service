@@ -16,6 +16,7 @@ import lombok.Getter;
 public abstract class TransportPointLayout<T extends TransportPoint> extends VerticalLayout {
     @Getter
     private final T transportPoint;
+    private int maxCapacity;
 
     private Label nameLabel;
     private Label addressLabel;
@@ -38,19 +39,24 @@ public abstract class TransportPointLayout<T extends TransportPoint> extends Ver
             capacityField.setMax(provider.getMaxCapacity());
 
         capacityField.setMin(1);
+        capacityField.setValue(1.0);
         capacityField.setHasControls(true);
         capacityField.setSuffixComponent(new Span("tons"));
         capacityField.setStep(1);
+        capacityField.addValueChangeListener(event -> {
+            this.maxCapacity = event.getValue()
+                    .intValue();
+            fireEvent(new TransportPointEvent.CapacityChangedEvent(this, transportPoint, maxCapacity));
+        });
     }
 
     private void configureButton() {
         deleteButton.addClickListener(buttonClickEvent ->
-                fireEvent(new TransportPointEvent.DeleteEvent(this,transportPoint)));
+                fireEvent(new TransportPointEvent.DeleteEvent(this, transportPoint)));
     }
 
     @Override
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
-
 }

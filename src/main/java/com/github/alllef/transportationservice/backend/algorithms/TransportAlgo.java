@@ -10,15 +10,16 @@ import java.util.Map;
 public class TransportAlgo {
     private final CostsModel costsModel;
     private Map<Coords, Integer> nodesWithShipments;
+    private Map<Coords, Integer> tmpCostsMatrix;
 
     public void startAlgo() {
         MinCostMethod minCostMethod = new MinCostMethod(costsModel);
         Potentials potentials = new Potentials(minCostMethod);
         nodesWithShipments = potentials.getPotentialNodes();
+        tmpCostsMatrix = minCostMethod.getTmpCostsMatrix();
     }
 
     public int getTransportationPrice() {
-        return AlgoUtils.calcTransportSum(nodesWithShipments, potentials.getMinCostMethod().getTmpCostsMatrix());
+        return AlgoUtils.calcTransportSum(nodesWithShipments, tmpCostsMatrix);
     }
-
 }

@@ -41,7 +41,7 @@ public class TransportationServiceApplication {
         for (Provider provider : providers) {
             for (Consumer consumer : consumers) {
                 Random random = new Random();
-                int number = random.nextInt(5) + 1;
+                int number = random.nextInt(500) + 300;
                 distances.add(new Distance(new DistanceKey(provider.getProviderId(), consumer.getConsumerId()), provider, consumer, number));
             }
         }

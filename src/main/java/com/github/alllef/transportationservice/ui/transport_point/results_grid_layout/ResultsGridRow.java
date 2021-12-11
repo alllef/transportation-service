@@ -12,6 +12,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
+
 public class ResultsGridRow {
     private Provider provider;
     private Map<Consumer,Integer> consumersWithShipments;

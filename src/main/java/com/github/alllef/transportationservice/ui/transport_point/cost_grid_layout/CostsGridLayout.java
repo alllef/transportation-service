@@ -5,9 +5,12 @@ import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.entity.distance.Distance;
 import com.github.alllef.transportationservice.backend.database.service.DistanceService;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.shared.Registration;
 
 import java.util.*;
 
@@ -24,6 +27,7 @@ public class CostsGridLayout extends VerticalLayout {
         this.distanceService = distanceService;
         configureGrid();
         add(costsGrid, calculateResultButton);
+        configureButton();
     }
 
     public void addRow(Provider provider, Transport transport) {
@@ -76,7 +80,13 @@ public class CostsGridLayout extends VerticalLayout {
     }
 
     private void configureButton() {
-        calculateResultButton.addClickListener(buttonClickEvent ->fireEvent())
+        calculateResultButton.addClickListener(buttonClickEvent ->
+                fireEvent(new CostsGridEvent.CalculationEvent(this)));
+    }
+
+    @Override
+    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
+        return getEventBus().addListener(eventType, listener);
     }
 
 }
