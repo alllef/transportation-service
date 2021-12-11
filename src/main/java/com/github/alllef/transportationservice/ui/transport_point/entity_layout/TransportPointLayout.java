@@ -5,7 +5,9 @@ import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.TransportPoint;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,21 +20,26 @@ public abstract class TransportPointLayout<T extends TransportPoint> extends Ver
     private final T transportPoint;
     private int maxCapacity;
 
-    private Label nameLabel;
-    private Label addressLabel;
-    private NumberField capacityField = new NumberField("Max capacity");
+    private Text nameAddressText;
+    protected NumberField capacityField = new NumberField();
     private Button deleteButton = new Button("Delete");
 
     public TransportPointLayout(T transportPoint) {
         this.transportPoint = transportPoint;
-        nameLabel = new Label(transportPoint.getName());
-        addressLabel = new Label(transportPoint.getAddress());
-        add(nameLabel, addressLabel, capacityField, deleteButton);
+        nameAddressText = new Text(String.format("""
+                City: %s
+                Address: %s""",transportPoint.getName(),transportPoint.getAddress()));
+        add(nameAddressText, capacityField, deleteButton);
         configureCapacityField();
         configureButton();
+        configureLayoutStyle();
     }
 
-    private void configureCapacityField() {
+    private void configureLayoutStyle() {
+        getStyle().set("border", "1px solid black");
+    }
+
+    protected void configureCapacityField() {
         if (transportPoint instanceof Consumer consumer)
             capacityField.setMax(consumer.getMaxNeeds());
         else if (transportPoint instanceof Provider provider)
@@ -53,6 +60,7 @@ public abstract class TransportPointLayout<T extends TransportPoint> extends Ver
     private void configureButton() {
         deleteButton.addClickListener(buttonClickEvent ->
                 fireEvent(new TransportPointEvent.DeleteEvent(this, transportPoint)));
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
     }
 
     @Override

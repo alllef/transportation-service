@@ -21,15 +21,29 @@ public class ProviderLayout extends TransportPointLayout<Provider> {
         configureTransportComboBox();
     }
 
+    @Override
+    protected void configureCapacityField() {
+        super.configureCapacityField();
+        int maxCapacity = getProvider()
+                .getMaxCapacity();
+
+        capacityField.setMax(maxCapacity);
+        capacityField.setHelperText("Max capacity is: " + maxCapacity);
+        capacityField.setLabel("Capacity");
+    }
+
     private void configureTransportComboBox() {
         transportComboBox.setItems(transportService.findAll());
-        transportComboBox.setPlaceholder("Find transport with different parameters");
+        transportComboBox.setPlaceholder("Choose transport");
         transportComboBox.setHelperText("You haven't choose transport yet");
-
+        transportComboBox.setClearButtonVisible(true);
+        transportComboBox.setItemLabelGenerator(transport ->
+                transport.getName() + " " + transport.getFuelConsumptionPerKm() + "litres/km");
         transportComboBox.addValueChangeListener(event -> {
             transportLabel.setText(event.getValue()
                     .getName());
-        fireEvent(new TransportPointEvent.ProviderConfiguredEvent(this,getTransport(),getProvider()));
+            transportComboBox.setHelperText("");
+            fireEvent(new TransportPointEvent.ProviderConfiguredEvent(this, getTransport(), getProvider()));
         });
     }
 

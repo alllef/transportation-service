@@ -11,4 +11,15 @@ public class ConsumerLayout extends TransportPointLayout<Consumer> {
     public Consumer getConsumer(){
         return getTransportPoint();
     }
+
+    @Override
+    protected void configureCapacityField() {
+        super.configureCapacityField();
+        int maxNeeds = getConsumer()
+                .getMaxNeeds();
+
+        capacityField.setMax(maxNeeds);
+        capacityField.setHelperText("Max needs are: " + maxNeeds);
+        capacityField.setLabel("Needs");
+    }
 }
