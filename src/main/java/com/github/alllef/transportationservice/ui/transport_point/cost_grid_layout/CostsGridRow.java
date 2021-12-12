@@ -6,6 +6,7 @@ import com.github.alllef.transportationservice.backend.database.entity.Transport
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -13,5 +14,6 @@ import java.util.Set;
 public class CostsGridRow {
     private Provider provider;
     private Transport transport;
-    private Set<Consumer> consumers;
+    private int providerCapacity;
+    private Map<Consumer,Integer> consumersWithNeeds;
 }

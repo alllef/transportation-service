@@ -31,21 +31,22 @@ public class CostsGridLayout extends VerticalLayout {
     }
 
     public void addRow(Provider provider, Transport transport) {
-        providersWithTransportAndCapacity.put(provider, Map.entry(transport,1));
+        providersWithTransportAndCapacity.put(provider, Map.entry(transport, 1));
         costsGrid.setItems(getCostsGridRows());
     }
 
-    public void onProviderCapacityUpdated(Provider provider, int capacity){
+    public void onProviderCapacityUpdated(Provider provider, int capacity) {
         Transport providerTransport = providersWithTransportAndCapacity.get(provider)
                 .getKey();
 
-        providersWithTransportAndCapacity.put(provider,Map.entry(providerTransport,capacity));
+        providersWithTransportAndCapacity.put(provider, Map.entry(providerTransport, capacity));
+        costsGrid.setItems(getCostsGridRows());
     }
 
-    public void onConsumerCapacityUpdated(Consumer consumer, int capacity){
-        consumersWithCapacity.put(consumer,capacity);
-    costsGrid.getColumnByKey(consumer.getName())
-            .setHeader(consumer.getName()+"\n"+capacity);
+    public void onConsumerCapacityUpdated(Consumer consumer, int capacity) {
+        consumersWithCapacity.put(consumer, capacity);
+        costsGrid.getColumnByKey(consumer.getName())
+                .setHeader(consumer.getName() + ": " + capacity);
     }
 
     public void removeRow(Provider provider) {
@@ -54,13 +55,13 @@ public class CostsGridLayout extends VerticalLayout {
     }
 
     public void addColumn(Consumer consumer) {
-            costsGrid.addColumn(row -> {
-                        Provider tmpProvider = row.getProvider();
-                        Distance distance = distanceService.getDistance(tmpProvider, consumer);
-                        return distanceService.calcTransportationPrice(distance, row.getTransport());
-                    })
-                    .setKey(consumer.getName())
-                    .setHeader(consumer.getName());
+        costsGrid.addColumn(row -> {
+                    Provider tmpProvider = row.getProvider();
+                    Distance distance = distanceService.getDistance(tmpProvider, consumer);
+                    return distanceService.calcTransportationPrice(distance, row.getTransport());
+                })
+                .setKey(consumer.getName())
+                .setHeader(consumer.getName() + ": " + 1);
 
         costsGrid.setItems(getCostsGridRows());
     }
@@ -74,7 +75,7 @@ public class CostsGridLayout extends VerticalLayout {
     private List<CostsGridRow> getCostsGridRows() {
         List<CostsGridRow> rows = new ArrayList<>();
         for (var providerTransportEntry : providersWithTransportAndCapacity.entrySet()) {
-            CostsGridRow row = new CostsGridRow(providerTransportEntry.getKey(), providerTransportEntry.getValue().getKey(), consumersWithCapacity.keySet());
+            CostsGridRow row = new CostsGridRow(providerTransportEntry.getKey(), providerTransportEntry.getValue().getKey(), providerTransportEntry.getValue().getValue(), consumersWithCapacity);
             rows.add(row);
         }
 
@@ -83,7 +84,7 @@ public class CostsGridLayout extends VerticalLayout {
 
     private void configureGrid() {
         costsGrid.addColumn(row -> row.getProvider()
-                        .getName())
+                        .getName() + "\n" + row.getProviderCapacity())
                 .setKey("Providers")
                 .setHeader("Provider names");
 
