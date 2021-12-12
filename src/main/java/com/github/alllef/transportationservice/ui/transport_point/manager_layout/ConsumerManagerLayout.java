@@ -16,6 +16,12 @@ public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer>
     }
 
     @Override
+    protected void configureChoosePointComboBox() {
+        choosePointComboBox.setLabel("Choose consumer");
+        choosePointComboBox.setItemLabelGenerator(item -> String.format("%s(max needs: %s)", item.getName(), item.getMaxNeeds()));
+    }
+
+    @Override
     protected void onButtonClicked(ClickEvent<?> clickEvent) {
         super.onButtonClicked(clickEvent);
         resetComboBoxValues(consumerService.findAll());

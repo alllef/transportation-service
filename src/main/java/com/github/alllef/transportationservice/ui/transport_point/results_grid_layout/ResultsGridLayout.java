@@ -8,6 +8,7 @@ import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.entity.distance.Distance;
 import com.github.alllef.transportationservice.backend.database.service.DistanceService;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -18,6 +19,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ResultsGridLayout extends VerticalLayout {
+    private Text finalCostText = new Text("Final cost result is: ");
+
     private final Grid<ResultsGridRow> resultsGrid = new Grid<>();
     private final Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity;
     private final Map<Consumer, Integer> consumersWithCapacity;
@@ -28,14 +31,17 @@ public class ResultsGridLayout extends VerticalLayout {
         this.providersWithTransportAndCapacity = providersWithTransportAndCapacity;
         this.consumersWithCapacity = consumersWithCapacity;
         configureGrid();
-        add(resultsGrid);
+        add(finalCostText, resultsGrid);
+        setSizeFull();
+        setHeight("auto");
     }
 
     private void configureGrid() {
         resultsGrid.addColumn(row -> row.getProvider()
-                        .getName())
+                        .getName() + ": " + providersWithTransportAndCapacity.get(row.getProvider()).getValue())
                 .setKey("Providers")
-                .setHeader("Provider names");
+                .setHeader("Provider names")
+                .setWidth("5vw");
 
         for (Consumer consumer : consumersWithCapacity.keySet()) {
             resultsGrid.addColumn(row -> {
@@ -44,10 +50,12 @@ public class ResultsGridLayout extends VerticalLayout {
                         return 0;
                     })
                     .setKey(consumer.getName())
-                    .setHeader(consumer.getName());
+                    .setHeader(consumer.getName() + ": " + consumersWithCapacity.get(consumer))
+                    .setWidth("5vw");
         }
 
         resultsGrid.setSizeFull();
+        resultsGrid.setHeight("100vh");
         resultsGrid.setItems(getRows());
     }
 
@@ -76,6 +84,7 @@ public class ResultsGridLayout extends VerticalLayout {
         TransportAlgo transportAlgo = new TransportAlgo(costsModel);
         transportAlgo.startAlgo();
 
+        finalCostText.setText(finalCostText.getText() + transportAlgo.getTransportationPrice());
         Map<Coords, Integer> nodesWithShipments = transportAlgo.getNodesWithShipments();
         List<ResultsGridRow> rowsList = new ArrayList<>();
 

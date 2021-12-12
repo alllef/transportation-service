@@ -12,12 +12,11 @@ public class ProviderLayout extends TransportPointLayout<Provider> {
     private final TransportService transportService;
 
     ComboBox<Transport> transportComboBox = new ComboBox<>("Transport");
-    Label transportLabel = new Label();
 
     public ProviderLayout(Provider transportPoint, TransportService transportService) {
         super(transportPoint);
         this.transportService = transportService;
-        add(transportComboBox, transportLabel);
+        add(transportComboBox);
         configureTransportComboBox();
     }
 
@@ -40,8 +39,6 @@ public class ProviderLayout extends TransportPointLayout<Provider> {
         transportComboBox.setItemLabelGenerator(transport ->
                 transport.getName() + " " + transport.getFuelConsumptionPerKm() + "liters/km");
         transportComboBox.addValueChangeListener(event -> {
-            transportLabel.setText(event.getValue()
-                    .getName());
             transportComboBox.setHelperText("");
             fireEvent(new TransportPointEvent.ProviderConfiguredEvent(this, getTransport(), getProvider()));
         });

@@ -21,6 +21,12 @@ public class ProviderManagerLayout extends TransportPointManagerLayout<Provider>
     }
 
     @Override
+    protected void configureChoosePointComboBox() {
+        choosePointComboBox.setLabel("Choose provider");
+        choosePointComboBox.setItemLabelGenerator(item-> String.format("%s(max capacity: %s)",item.getName(),item.getMaxCapacity()));
+    }
+
+    @Override
     protected void onButtonClicked(ClickEvent<?> clickEvent) {
         super.onButtonClicked(clickEvent);
         resetComboBoxValues(providerService.findAll());

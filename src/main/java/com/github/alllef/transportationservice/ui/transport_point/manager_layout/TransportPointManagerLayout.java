@@ -26,7 +26,7 @@ public abstract class TransportPointManagerLayout<T extends TransportPoint> exte
     @Getter
     protected Map<T, Integer> usedTransportPoints = new HashMap<>();
 
-    protected ComboBox<T> choosePointComboBox = new ComboBox<>("Choose entity");
+    protected ComboBox<T> choosePointComboBox = new ComboBox<>();
     private Button addButton = new Button("Add");
 
     public TransportPointManagerLayout(TransportPointLayoutFactory transportPointLayoutFactory) {
@@ -34,11 +34,10 @@ public abstract class TransportPointManagerLayout<T extends TransportPoint> exte
         add(choosePointComboBox, addButton);
         configureAddButton();
         configureChoosePointComboBox();
+        setSizeFull();
     }
 
-    protected void configureChoosePointComboBox() {
-        choosePointComboBox.setItemLabelGenerator(T::getName);
-    }
+    protected abstract void configureChoosePointComboBox();
 
     protected void configureAddButton() {
         addButton.addClickListener(this::onButtonClicked);

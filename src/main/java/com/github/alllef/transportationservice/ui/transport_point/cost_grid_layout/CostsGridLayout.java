@@ -28,6 +28,8 @@ public class CostsGridLayout extends VerticalLayout {
         configureGrid();
         add(costsGrid, calculateResultButton);
         configureButton();
+        setSizeFull();
+        ;
     }
 
     public void addRow(Provider provider, Transport transport) {
@@ -61,7 +63,8 @@ public class CostsGridLayout extends VerticalLayout {
                     return distanceService.calcTransportationPrice(distance, row.getTransport());
                 })
                 .setKey(consumer.getName())
-                .setHeader(consumer.getName() + ": " + 1);
+                .setHeader(consumer.getName() + ": " + 1)
+                .setWidth("5vw");
 
         costsGrid.setItems(getCostsGridRows());
     }
@@ -86,9 +89,11 @@ public class CostsGridLayout extends VerticalLayout {
         costsGrid.addColumn(row -> row.getProvider()
                         .getName() + "\n" + row.getProviderCapacity())
                 .setKey("Providers")
-                .setHeader("Provider names");
+                .setHeader("Provider names")
+                .setWidth("5vw");
 
         costsGrid.setSizeFull();
+        costsGrid.setWidth("50vw");
     }
 
     private void configureButton() {
