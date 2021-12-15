@@ -33,7 +33,7 @@ public class ProviderManagerLayout extends TransportPointManagerLayout<Provider>
         createButton.setText("Create provider");
         createButton.addClickListener(event -> {
             ProviderFormLayout providerFormLayout = new ProviderFormLayout();
-            add(providerFormLayout);
+            addComponentAtIndex(3,providerFormLayout);
             providerFormLayout.addListener(ProviderFormEvent.ProviderSaveEvent.class, saveEvent -> {
                 providerService.save(saveEvent.getProvider());
                 remove(providerFormLayout);

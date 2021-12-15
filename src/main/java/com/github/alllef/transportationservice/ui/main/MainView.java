@@ -57,7 +57,9 @@ public class MainView extends VerticalLayout {
                 resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
                 add(resultsGridLayout);
             }
+            remove(resultsGridLayout);
             resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
+            add(resultsGridLayout);
         });
     }
 }

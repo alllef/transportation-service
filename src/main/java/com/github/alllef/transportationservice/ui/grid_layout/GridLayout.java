@@ -89,6 +89,7 @@ public class GridLayout extends VerticalLayout {
     public void removeColumn(Consumer consumer) {
         consumersWithCapacity.remove(consumer);
         costsGrid.removeColumnByKey(consumer.getName());
+        distanceGrid.removeColumnByKey(consumer.getName());
         updateGrids();
     }
 
@@ -123,8 +124,9 @@ public class GridLayout extends VerticalLayout {
         costsGrid.addColumn(row -> row.getProvider()
                         .getName() + "\n" + row.getProviderCapacity())
                 .setKey("Providers")
-                .setHeader("Provider names")
+                .setHeader("Provider names(costs grid)")
                 .setWidth("5vw");
+
         costsGrid.setSizeFull();
         costsGrid.setWidth("50vw");
     }
@@ -133,7 +135,7 @@ public class GridLayout extends VerticalLayout {
         distanceGrid.addColumn(row -> row.getProvider()
                         .getName())
                 .setKey("Providers")
-                .setHeader("Provider names")
+                .setHeader("Provider names(distances grid)")
                 .setWidth("5vw");
         distanceGrid.setSizeFull();
         distanceGrid.setWidth("50vw");

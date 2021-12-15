@@ -10,12 +10,11 @@ import com.github.alllef.transportationservice.backend.database.entity.distance.
 import com.github.alllef.transportationservice.backend.database.service.DistanceService;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResultsGridLayout extends VerticalLayout {
@@ -68,6 +67,14 @@ public class ResultsGridLayout extends VerticalLayout {
                 .stream()
                 .toList();
 
+        if (consumers.size() < 2 || providers.size() < 2) {
+            Notification notification = new Notification("There should be at least 2 configured providers and 2 consumers");
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.setDuration(5000);
+            notification.open();
+            return new ArrayList<>();
+        }
+
         List<Integer> providersCapacity = providers.stream()
                 .map(provider -> providersWithTransportAndCapacity.get(provider)
                         .getValue())
@@ -77,12 +84,27 @@ public class ResultsGridLayout extends VerticalLayout {
                 .map(consumersWithCapacity::get)
                 .toList();
 
-        int[][] costs = getCosts(providers, consumers);
+        int[][] costs = new int[1][1];
+        try {
+            costs = getCosts(providers, consumers);
+        } catch (NoSuchElementException e) {
+            Notification notification = new Notification("Some distances between transport point missed. Please, add all distances");
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.setDuration(5000);
+            notification.open();
+        }
 
         CostsModel costsModel = new CostsModel(costs, providersCapacity, consumersCapacity);
 
         TransportAlgo transportAlgo = new TransportAlgo(costsModel);
-        transportAlgo.startAlgo();
+        try {
+            transportAlgo.startAlgo();
+        } catch (Exception e) {
+            Notification notification = new Notification("Exception when calculating was thrown. Try to reconfigure some values");
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.setDuration(5000);
+            notification.open();
+        }
 
         finalCostText.setText(finalCostText.getText() + transportAlgo.getTransportationPrice());
         Map<Coords, Integer> nodesWithShipments = transportAlgo.getNodesWithShipments();

@@ -30,7 +30,7 @@ public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer>
         createButton.setText("Create consumer");
         createButton.addClickListener(event -> {
             ConsumerFormLayout consumerFormLayout = new ConsumerFormLayout();
-            add(consumerFormLayout);
+            addComponentAtIndex(3, consumerFormLayout);
             consumerFormLayout.addListener(ConsumerFormEvent.ConsumerSaveEvent.class, saveEvent -> {
                 consumerService.save(saveEvent.getConsumer());
                 remove(consumerFormLayout);

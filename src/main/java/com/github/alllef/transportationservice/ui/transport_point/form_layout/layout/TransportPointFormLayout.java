@@ -36,12 +36,14 @@ public abstract class TransportPointFormLayout extends FormLayout {
 
     protected abstract void configureBinder();
 
+    protected abstract void configureNumberField();
+
     @Override
     public <S extends ComponentEvent<?>> Registration addListener(Class<S> eventType, ComponentEventListener<S> listener) {
         return getEventBus().addListener(eventType, listener);
     }
 
-    protected static class DoubleToIntConverter implements Converter<Double,Integer> {
+    protected static class DoubleToIntConverter implements Converter<Double, Integer> {
 
         @Override
         public Result<Integer> convertToModel(Double aDouble, ValueContext valueContext) {
