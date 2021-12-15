@@ -10,6 +10,7 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -108,6 +109,13 @@ public class GridLayout extends VerticalLayout {
         HorizontalLayout layout = new HorizontalLayout();
         for (Consumer consumer : consumersWithCapacity.keySet()) {
             NumberField numberField = new NumberField(consumer.getName() + "-" + provider.getName());
+            numberField.setMax(10000);
+            numberField.setMin(1);
+            numberField.setHasControls(true);
+            numberField.setSuffixComponent(new Span("km"));
+            numberField.setStep(1);
+            numberField.setHelperText("Max distance is: "+numberField.getMax());
+
             Optional<Distance> distance = distanceService.getDistance(row.getProvider(), consumer);
             distance.ifPresent(value -> numberField.setValue((double) value.getDistance()));
             layout.add(numberField);
