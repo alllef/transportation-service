@@ -23,29 +23,7 @@ import java.util.Random;
 @SpringBootApplication
 @AllArgsConstructor
 public class TransportationServiceApplication {
-    private final DistanceRepo distanceRepo;
-    private final ProviderRepo providerRepo;
-    private final ConsumerRepo consumerRepo;
-
-
     public static void main(String[] args) {
         SpringApplication.run(TransportationServiceApplication.class, args);
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void populateWithDistanceData() {
-        List<Provider> providers = providerRepo.findAll();
-        List<Consumer> consumers = consumerRepo.findAll();
-        List<Distance> distances = new ArrayList<>();
-
-        for (Provider provider : providers) {
-            for (Consumer consumer : consumers) {
-                Random random = new Random();
-                int number = random.nextInt(500) + 300;
-                distances.add(new Distance(new DistanceKey(provider.getProviderId(), consumer.getConsumerId()), provider, consumer, number));
-            }
-        }
-
-        distanceRepo.saveAll(distances);
     }
 }
