@@ -105,7 +105,8 @@ public class ResultsGridLayout extends VerticalLayout {
         int[][] costs = new int[providers.size()][consumers.size()];
         for (int i = 0; i < providers.size(); i++) {
             for (int j = 0; j < consumers.size(); j++) {
-                Distance distance = distanceService.getDistance(providers.get(i), consumers.get(j));
+                Distance distance = distanceService.getDistance(providers.get(i), consumers.get(j))
+                        .orElseThrow();
                 costs[i][j] = distanceService.calcTransportationPrice(distance, providersWithTransportAndCapacity.get(providers.get(i)).getKey());
             }
         }

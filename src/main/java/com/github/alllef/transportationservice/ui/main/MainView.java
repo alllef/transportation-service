@@ -1,8 +1,8 @@
 package com.github.alllef.transportationservice.ui.main;
 
-import com.github.alllef.transportationservice.ui.cost_grid_layout.CostsGridEvent;
-import com.github.alllef.transportationservice.ui.cost_grid_layout.CostsGridLayout;
-import com.github.alllef.transportationservice.ui.cost_grid_layout.CostsGridLayoutFactory;
+import com.github.alllef.transportationservice.ui.grid_layout.CostsGridEvent;
+import com.github.alllef.transportationservice.ui.grid_layout.GridLayout;
+import com.github.alllef.transportationservice.ui.grid_layout.CostsGridLayoutFactory;
 import com.github.alllef.transportationservice.ui.transport_point.manager_layout.*;
 import com.github.alllef.transportationservice.ui.results_grid_layout.ResultsGridLayout;
 import com.github.alllef.transportationservice.ui.results_grid_layout.ResultsGridLayoutFactory;
@@ -24,7 +24,7 @@ public class MainView extends VerticalLayout {
 
     private ProviderManagerLayout providerManagerLayout;
     private ConsumerManagerLayout consumerManagerLayout;
-    private CostsGridLayout costsGridLayout;
+    private GridLayout costsGridLayout;
     private ResultsGridLayout resultsGridLayout;
 
     @PostConstruct

@@ -1,4 +1,4 @@
-package com.github.alllef.transportationservice.ui.cost_grid_layout;
+package com.github.alllef.transportationservice.ui.grid_layout;
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
-public class CostsGridRow {
+public class GridRow {
     private Provider provider;
     private Transport transport;
     private int providerCapacity;

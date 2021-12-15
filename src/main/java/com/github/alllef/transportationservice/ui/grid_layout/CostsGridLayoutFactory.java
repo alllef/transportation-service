@@ -1,4 +1,4 @@
-package com.github.alllef.transportationservice.ui.cost_grid_layout;
+package com.github.alllef.transportationservice.ui.grid_layout;
 
 import com.github.alllef.transportationservice.backend.database.service.DistanceService;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class CostsGridLayoutFactory {
     private final DistanceService distanceService;
 
-    public CostsGridLayout createCostsGridLayout() {
-        return new CostsGridLayout(distanceService);
+    public GridLayout createCostsGridLayout() {
+        return new GridLayout(distanceService);
     }
 }
