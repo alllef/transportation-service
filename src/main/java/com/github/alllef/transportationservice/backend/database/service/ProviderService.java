@@ -15,4 +15,8 @@ public class ProviderService {
     public List<Provider> findAll() {
         return providerRepo.findAll();
     }
+
+    public void save(Provider provider) {
+        providerRepo.save(provider);
+    }
 }

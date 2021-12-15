@@ -1,4 +1,4 @@
-package com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout;
+package com.github.alllef.transportationservice.ui.cost_grid_layout;
 
 import com.vaadin.flow.component.ComponentEvent;
 

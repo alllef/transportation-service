@@ -1,6 +1,7 @@
 package com.github.alllef.transportationservice.backend.database.service;
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
+import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.repository.ConsumerRepo;
 import lombok.AllArgsConstructor;
@@ -15,5 +16,9 @@ public class ConsumerService {
 
     public List<Consumer> findAll() {
         return consumerRepo.findAll();
+    }
+
+    public void save(Consumer consumer) {
+        consumerRepo.save(consumer);
     }
 }

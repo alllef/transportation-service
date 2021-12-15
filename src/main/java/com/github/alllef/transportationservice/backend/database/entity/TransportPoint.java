@@ -8,6 +8,7 @@ import javax.persistence.MappedSuperclass;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 public class TransportPoint {

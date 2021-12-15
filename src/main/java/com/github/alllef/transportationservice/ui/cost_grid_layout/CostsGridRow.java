@@ -1,4 +1,4 @@
-package com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout;
+package com.github.alllef.transportationservice.ui.cost_grid_layout;
 
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Map;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor

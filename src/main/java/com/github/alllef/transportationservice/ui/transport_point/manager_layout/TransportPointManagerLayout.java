@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 public abstract class TransportPointManagerLayout<T extends TransportPoint> extends VerticalLayout {
     private final TransportPointLayoutFactory transportPointLayoutFactory;
+    protected Button createButton = new Button();
 
     @Getter
     protected Map<T, Integer> usedTransportPoints = new HashMap<>();
@@ -31,13 +32,15 @@ public abstract class TransportPointManagerLayout<T extends TransportPoint> exte
 
     public TransportPointManagerLayout(TransportPointLayoutFactory transportPointLayoutFactory) {
         this.transportPointLayoutFactory = transportPointLayoutFactory;
-        add(choosePointComboBox, addButton);
+        add(choosePointComboBox, addButton,createButton);
         configureAddButton();
+        configureCreateButton();
         configureChoosePointComboBox();
         setSizeFull();
     }
 
     protected abstract void configureChoosePointComboBox();
+    protected abstract void configureCreateButton();
 
     protected void configureAddButton() {
         addButton.addClickListener(this::onButtonClicked);

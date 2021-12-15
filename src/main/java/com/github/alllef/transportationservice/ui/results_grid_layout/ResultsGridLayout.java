@@ -1,4 +1,4 @@
-package com.github.alllef.transportationservice.ui.transport_point.results_grid_layout;
+package com.github.alllef.transportationservice.ui.results_grid_layout;
 
 import com.github.alllef.transportationservice.backend.algorithms.CostsModel;
 import com.github.alllef.transportationservice.backend.algorithms.TransportAlgo;

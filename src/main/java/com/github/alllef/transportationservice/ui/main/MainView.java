@@ -1,13 +1,11 @@
-package com.github.alllef.transportationservice.ui;
+package com.github.alllef.transportationservice.ui.main;
 
-import com.github.alllef.transportationservice.backend.database.service.ProviderService;
-import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridEvent;
-import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridLayout;
-import com.github.alllef.transportationservice.ui.transport_point.cost_grid_layout.CostsGridLayoutFactory;
+import com.github.alllef.transportationservice.ui.cost_grid_layout.CostsGridEvent;
+import com.github.alllef.transportationservice.ui.cost_grid_layout.CostsGridLayout;
+import com.github.alllef.transportationservice.ui.cost_grid_layout.CostsGridLayoutFactory;
 import com.github.alllef.transportationservice.ui.transport_point.manager_layout.*;
-import com.github.alllef.transportationservice.ui.transport_point.results_grid_layout.ResultsGridLayout;
-import com.github.alllef.transportationservice.ui.transport_point.results_grid_layout.ResultsGridLayoutFactory;
-import com.vaadin.flow.component.button.Button;
+import com.github.alllef.transportationservice.ui.results_grid_layout.ResultsGridLayout;
+import com.github.alllef.transportationservice.ui.results_grid_layout.ResultsGridLayoutFactory;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;

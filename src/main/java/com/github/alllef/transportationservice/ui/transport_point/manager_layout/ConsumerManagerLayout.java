@@ -4,6 +4,10 @@ import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.service.ConsumerService;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointEvent;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayoutFactory;
+import com.github.alllef.transportationservice.ui.transport_point.form_layout.event.ConsumerFormEvent;
+import com.github.alllef.transportationservice.ui.transport_point.form_layout.event.ProviderFormEvent;
+import com.github.alllef.transportationservice.ui.transport_point.form_layout.layout.ConsumerFormLayout;
+import com.github.alllef.transportationservice.ui.transport_point.form_layout.layout.ProviderFormLayout;
 import com.vaadin.flow.component.ClickEvent;
 
 public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer> {
@@ -19,6 +23,21 @@ public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer>
     protected void configureChoosePointComboBox() {
         choosePointComboBox.setLabel("Choose consumer");
         choosePointComboBox.setItemLabelGenerator(item -> String.format("%s(max needs: %s)", item.getName(), item.getMaxNeeds()));
+    }
+
+    @Override
+    protected void configureCreateButton() {
+        createButton.setText("Create consumer");
+        createButton.addClickListener(event -> {
+            ConsumerFormLayout consumerFormLayout = new ConsumerFormLayout();
+            add(consumerFormLayout);
+            consumerFormLayout.addListener(ConsumerFormEvent.ConsumerSaveEvent.class, saveEvent -> {
+                consumerService.save(saveEvent.getConsumer());
+                remove(consumerFormLayout);
+                choosePointComboBox.setItems(consumerService.findAll());
+            });
+            consumerFormLayout.addListener(ConsumerFormEvent.ConsumerFormCloseEvent.class, closeEvent -> remove(consumerFormLayout));
+        });
     }
 
     @Override

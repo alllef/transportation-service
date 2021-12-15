@@ -11,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class Provider extends TransportPoint {
