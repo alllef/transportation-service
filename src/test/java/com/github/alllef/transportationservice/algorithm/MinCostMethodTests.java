@@ -19,22 +19,29 @@ public class MinCostMethodTests {
     @Test
     void testClosedTask() {
         MinCostMethod costMethod = new MinCostMethod(TestData.getClosedTransportTask());
-        assertEquals(115, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(),costMethod.getTmpCostsMatrix()));
+
+        costMethod.startAlgo();
+        assertEquals(115, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(), costMethod.getCostsModel().getCostsMatrix()));
     }
 
     // Example is from http://reshmat.ru/example_transport_2.html
     @Test
     void testOpenTaskWithFictionalProvider() {
         MinCostMethod costMethod = new MinCostMethod(TestData.getTransportTaskWithFictionalProvider());
-        assertEquals(costMethod.getCostsModel().getProviders().size() + 1, costMethod.getTmpProviders().size());
-        assertEquals(190, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(),costMethod.getTmpCostsMatrix()));
+        costMethod.startAlgo();
+
+        assertEquals(costMethod.getCostsModel().getProviders().size() , costMethod.getCostsModel().providersAmount());
+        assertEquals(190, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(), costMethod.getCostsModel().getCostsMatrix()));
     }
 
     // Example is from http://reshmat.ru/example_transport_3.html
     @Test
     void testOpenTaskWithFictionalConsumer() {
         MinCostMethod costMethod = new MinCostMethod(TestData.getTransportTaskWithFictionalConsumer());
-        assertEquals(215, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(),costMethod.getTmpCostsMatrix()));
-        assertEquals(costMethod.getCostsModel().getConsumers().size() + 1, costMethod.getTmpConsumers().size());
+        costMethod.startAlgo();
+
+        assertEquals(costMethod.getCostsModel().getConsumers().size(), costMethod.getCostsModel().consumersAmount());
+        assertEquals(215, AlgoUtils.calcTransportSum(costMethod.getNodesWithPlanNum(), costMethod.getCostsModel().getCostsMatrix()));
+
     }
 }

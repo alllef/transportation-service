@@ -3,6 +3,7 @@ package com.github.alllef.transportationservice.backend.algorithms;
 import static com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils.*;
 
 import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
+import com.github.alllef.transportationservice.backend.algorithms.utils.CoordsNum;
 import com.github.alllef.transportationservice.backend.algorithms.utils.enums.EntityType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,34 +12,44 @@ import lombok.ToString;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Getter
 @EqualsAndHashCode
 @ToString
 public class MinCostMethod {
     private CostsModel costsModel;
 
-    private Map<Coords, Integer> tmpCostsMatrix = new HashMap<>();
+    private int[][] tmpCostsMatrix;
     private List<Integer> tmpProviders = new ArrayList<>();
     private List<Integer> tmpConsumers = new ArrayList<>();
 
+    @Getter
     private Map<Coords, Integer> nodesWithPlanNum = new HashMap<>();
+
     private List<Integer> blockedProvidersKeys = new ArrayList<>();
     private List<Integer> blockedConsumersKeys = new ArrayList<>();
-    private Map<Coords, Integer> additionalBlockedValueMatrix = new HashMap<>();
+    private boolean[][] additionalBlockedValueMatrix;
 
     public MinCostMethod(CostsModel costsModel) {
         this.costsModel = costsModel;
-        tmpCostsMatrix.putAll(costsModel.getCostsMatrix());
+
         tmpProviders.addAll(costsModel.getProviders());
         tmpConsumers.addAll(costsModel.getConsumers());
-        startAlgo();
+
+        tmpCostsMatrix = new int[tmpProviders.size() + 1][tmpConsumers.size() + 1];
+        for (int i = 0; i < tmpProviders.size(); i++) {
+            for (int j = 0; j < tmpConsumers.size(); j++)
+                tmpCostsMatrix[i][j] = costsModel.getCostsMatrix()[i][j];
+        }
+
+        additionalBlockedValueMatrix = new boolean[tmpProviders.size() + 1][tmpConsumers.size() + 1];
     }
 
-    private void startAlgo() {
+    public CostsModel getCostsModel() {
+        return new CostsModel(tmpCostsMatrix, tmpProviders, tmpConsumers);
+    }
+
+    public void startAlgo() {
         if (!costsModel.isClosed())
             convertOpenTaskToClosed();
-
-        additionalBlockedValueMatrix.putAll(tmpCostsMatrix);
 
         minCostAlgo();
         if (isDegenerate(tmpProviders.size(), tmpConsumers.size(), nodesWithPlanNum.size()))
@@ -52,14 +63,13 @@ public class MinCostMethod {
         if (providerSum > consumerSum) {
             int additionalConsumer = providerSum - consumerSum;
             tmpConsumers.add(additionalConsumer);
-            for (int i = 0; i < costsModel.getProviders().size(); i++)
-                tmpCostsMatrix.put(new Coords(i, costsModel.getConsumers().size()), Integer.MAX_VALUE);
+            for (int i = 0; i < costsModel.providersAmount(); i++)
+                tmpCostsMatrix[i][costsModel.consumersAmount()] = Integer.MAX_VALUE;
         } else {
             int additionalProvider = consumerSum - providerSum;
             tmpProviders.add(additionalProvider);
-            for (int i = 0; i < costsModel.getConsumers().size(); i++)
-                tmpCostsMatrix.put(new Coords(costsModel.getProviders().size(), i),
-                        Integer.MAX_VALUE);
+            for (int i = 0; i < costsModel.consumersAmount(); i++)
+                tmpCostsMatrix[costsModel.providersAmount()][i] = Integer.MAX_VALUE;
         }
     }
 
@@ -70,22 +80,29 @@ public class MinCostMethod {
     }
 
     private void minCostIter() {
-        Map.Entry<Coords, Integer> leastNode = additionalBlockedValueMatrix.entrySet()
-                .stream()
-                .min(Comparator.comparingInt(Map.Entry::getValue))
-                .orElseThrow();
+        List<CoordsNum> unblockedValues = new ArrayList<>();
 
-        if (leastNode.getValue() == Integer.MAX_VALUE) {
-            leastNode.setValue(0);
-            tmpCostsMatrix.put(leastNode.getKey(), leastNode.getValue());
+        for (int tmpProvider = 0; tmpProvider < tmpProviders.size(); tmpProvider++) {
+            for (int tmpConsumer = 0; tmpConsumer < tmpConsumers.size(); tmpConsumer++) {
+                if (!additionalBlockedValueMatrix[tmpProvider][tmpConsumer])
+                    unblockedValues.add(new CoordsNum(new Coords(tmpProvider, tmpConsumer), tmpCostsMatrix[tmpProvider][tmpConsumer]));
+            }
         }
 
-        int providerKey = leastNode.getKey().provider();
-        int consumerKey = leastNode.getKey().consumer();
+        CoordsNum leastNode = unblockedValues
+                .stream()
+                .min(Comparator.comparingInt(CoordsNum::num))
+                .orElseThrow();
+
+        int providerKey = leastNode.provider();
+        int consumerKey = leastNode.consumer();
+
+        if (leastNode.num() == Integer.MAX_VALUE)
+            tmpCostsMatrix[providerKey][consumerKey] = 0;
 
         int cost = Math.min(tmpProviders.get(providerKey), tmpConsumers.get(consumerKey));
 
-        nodesWithPlanNum.put(leastNode.getKey(), cost);
+        nodesWithPlanNum.put(leastNode.coords(), cost);
 
         tmpProviders.set(providerKey, tmpProviders.get(providerKey) - cost);
         tmpConsumers.set(consumerKey, tmpConsumers.get(consumerKey) - cost);
@@ -106,17 +123,19 @@ public class MinCostMethod {
     }
 
     private void blockEntity(int entityKey, EntityType type) {
-        additionalBlockedValueMatrix = additionalBlockedValueMatrix.entrySet()
-                .stream()
-                .filter(node -> switch (type) {
-                    case PROVIDER -> node.getKey().provider() != entityKey;
-                    case CONSUMER -> node.getKey().consumer() != entityKey;
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
         switch (type) {
-            case PROVIDER -> blockedProvidersKeys.add(entityKey);
-            case CONSUMER -> blockedConsumersKeys.add(entityKey);
+            case PROVIDER -> {
+                for (int i = 0; i < additionalBlockedValueMatrix[entityKey].length; i++)
+                    additionalBlockedValueMatrix[entityKey][i] = true;
+
+                blockedProvidersKeys.add(entityKey);
+            }
+            case CONSUMER -> {
+                for (int j = 0; j < additionalBlockedValueMatrix.length; j++)
+                    additionalBlockedValueMatrix[j][entityKey] = true;
+
+                blockedConsumersKeys.add(entityKey);
+            }
         }
     }
 }

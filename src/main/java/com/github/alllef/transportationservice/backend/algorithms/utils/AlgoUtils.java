@@ -9,15 +9,15 @@ public class AlgoUtils {
                 .reduce(0, Integer::sum);
     }
 
-    public static int calcTransportSum(Map<Coords,Integer> transportationNums,Map<Coords,Integer> priceNums) {
+    public static int calcTransportSum(Map<Coords, Integer> transportationNums, int[][] priceNums) {
         int result = 0;
         for (Coords key : transportationNums.keySet())
-            result += transportationNums.get(key) * priceNums.get(key);
+            result += transportationNums.get(key) * priceNums[key.provider()][key.consumer()];
 
         return result;
     }
 
-    public static boolean isDegenerate(int providersNum,int consumersNum,int nodesWithPlanNum) {
+    public static boolean isDegenerate(int providersNum, int consumersNum, int nodesWithPlanNum) {
         return (providersNum + consumersNum - 1) != nodesWithPlanNum;
     }
 

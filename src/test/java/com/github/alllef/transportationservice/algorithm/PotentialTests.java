@@ -2,9 +2,11 @@ package com.github.alllef.transportationservice.algorithm;
 
 import com.github.alllef.transportationservice.backend.algorithms.CostsModel;
 import com.github.alllef.transportationservice.backend.algorithms.MinCostMethod;
-import com.github.alllef.transportationservice.backend.algorithms.Potentials;
+import com.github.alllef.transportationservice.backend.algorithms.PotentialsMethod;
+import com.github.alllef.transportationservice.backend.algorithms.TransportAlgo;
 import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.util.Arrays;
@@ -16,13 +18,19 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 public class PotentialTests {
 
     int getTransportSum(CostsModel costsModel) {
-        MinCostMethod costMethod = new MinCostMethod(costsModel);
-        Potentials potentials = new Potentials(costMethod);
+        TransportAlgo transportAlgo = new TransportAlgo(costsModel);
+        transportAlgo.startAlgo();
 
-        return AlgoUtils.calcTransportSum(potentials.getPotentialNodes(), potentials.getMinCostMethod().getTmpCostsMatrix());
+        return AlgoUtils.calcTransportSum(transportAlgo.getNodesWithShipments(), transportAlgo.getTmpCostsMatrix());
+    }
+
+    @Test
+    void getTransportSumClosed(){
+        assertEquals(110, getTransportSum(TestData.getClosedTransportTask()));
     }
 
     @TestFactory
+
     Collection<DynamicTest> transportTaskPotentialsTests() {
         return Arrays.asList(
                 dynamicTest("Closed transport task", () -> assertEquals(110, getTransportSum(TestData.getClosedTransportTask()))),

@@ -10,13 +10,14 @@ import java.util.Map;
 public class TransportAlgo {
     private final CostsModel costsModel;
     private Map<Coords, Integer> nodesWithShipments;
-    private Map<Coords, Integer> tmpCostsMatrix;
+    private int[][] tmpCostsMatrix;
 
     public void startAlgo() {
         MinCostMethod minCostMethod = new MinCostMethod(costsModel);
-        Potentials potentials = new Potentials(minCostMethod);
+        minCostMethod.startAlgo();
+        PotentialsMethod potentials = new PotentialsMethod(minCostMethod.getCostsModel(),minCostMethod.getNodesWithPlanNum());
         nodesWithShipments = potentials.getPotentialNodes();
-        tmpCostsMatrix = minCostMethod.getTmpCostsMatrix();
+        tmpCostsMatrix = minCostMethod.getCostsModel().getCostsMatrix();
     }
 
     public int getTransportationPrice() {
