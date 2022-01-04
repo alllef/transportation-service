@@ -3,10 +3,7 @@ package com.github.alllef.transportationservice.ui.transport_point.manager_layou
 import com.github.alllef.transportationservice.backend.database.entity.Consumer;
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
-import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayout;
 import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
 
 public abstract class TransportPointManagerEvent extends ComponentEvent<TransportPointManagerLayout<?>> {

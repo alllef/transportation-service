@@ -3,10 +3,7 @@ package com.github.alllef.transportationservice.ui.transport_point.entity_layout
 import com.github.alllef.transportationservice.backend.database.entity.Provider;
 import com.github.alllef.transportationservice.backend.database.entity.Transport;
 import com.github.alllef.transportationservice.backend.database.service.TransportService;
-import com.github.alllef.transportationservice.ui.transport_point.manager_layout.ProviderManagerLayout;
-import com.github.alllef.transportationservice.ui.transport_point.manager_layout.TransportPointManagerEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Label;
 
 public class ProviderLayout extends TransportPointLayout<Provider> {
     private final TransportService transportService;

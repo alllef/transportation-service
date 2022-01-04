@@ -1,6 +1,7 @@
 package com.github.alllef.transportationservice.backend.algorithms;
 
-import com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils;
+import static com.github.alllef.transportationservice.backend.algorithms.utils.AlgoUtils.*;
+
 import com.github.alllef.transportationservice.backend.algorithms.utils.Coords;
 import com.github.alllef.transportationservice.backend.algorithms.utils.enums.EntityType;
 import lombok.EqualsAndHashCode;
@@ -40,23 +41,26 @@ public class MinCostMethod {
         additionalBlockedValueMatrix.putAll(tmpCostsMatrix);
 
         minCostAlgo();
-        if (AlgoUtils.isDegenerate(tmpProviders.size(),tmpConsumers.size(),nodesWithPlanNum.size())) throw new RuntimeException("Is degenerate. It is not possible");
+        if (isDegenerate(tmpProviders.size(), tmpConsumers.size(), nodesWithPlanNum.size()))
+            throw new RuntimeException("Is degenerate. It is not possible");
     }
 
     private void convertOpenTaskToClosed() {
-        if (AlgoUtils.sum(costsModel.getProviders()) > AlgoUtils.sum(costsModel.getConsumers())) {
-            int additionalConsumer = AlgoUtils.sum(costsModel.getProviders()) - AlgoUtils.sum(costsModel.getConsumers());
+        int providerSum = sum(costsModel.getProviders());
+        int consumerSum = sum(costsModel.getConsumers());
+
+        if (providerSum > consumerSum) {
+            int additionalConsumer = providerSum - consumerSum;
             tmpConsumers.add(additionalConsumer);
             for (int i = 0; i < costsModel.getProviders().size(); i++)
                 tmpCostsMatrix.put(new Coords(i, costsModel.getConsumers().size()), Integer.MAX_VALUE);
         } else {
-            int additionalProvider = AlgoUtils.sum(costsModel.getConsumers()) - AlgoUtils.sum(costsModel.getProviders());
+            int additionalProvider = consumerSum - providerSum;
             tmpProviders.add(additionalProvider);
             for (int i = 0; i < costsModel.getConsumers().size(); i++)
                 tmpCostsMatrix.put(new Coords(costsModel.getProviders().size(), i),
                         Integer.MAX_VALUE);
         }
-
     }
 
     private void minCostAlgo() {
@@ -104,23 +108,15 @@ public class MinCostMethod {
     private void blockEntity(int entityKey, EntityType type) {
         additionalBlockedValueMatrix = additionalBlockedValueMatrix.entrySet()
                 .stream()
-                .filter(node -> {
-                    if (type == EntityType.PROVIDER) return node.getKey().provider() != entityKey;
-                    else return node.getKey().consumer() != entityKey;
+                .filter(node -> switch (type) {
+                    case PROVIDER -> node.getKey().provider() != entityKey;
+                    case CONSUMER -> node.getKey().consumer() != entityKey;
                 })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        if (type == EntityType.CONSUMER) blockedConsumersKeys.add(entityKey);
-        else blockedProvidersKeys.add(entityKey);
+        switch (type) {
+            case PROVIDER -> blockedProvidersKeys.add(entityKey);
+            case CONSUMER -> blockedConsumersKeys.add(entityKey);
+        }
     }
-
-    public int calcTransportSum() {
-        int result = 0;
-        for (Coords key : nodesWithPlanNum.keySet())
-            result += nodesWithPlanNum.get(key) * tmpCostsMatrix.get(key)/*costsModel.getCostsMatrix().get(key)*/;
-
-        return result;
-    }
-
-
 }

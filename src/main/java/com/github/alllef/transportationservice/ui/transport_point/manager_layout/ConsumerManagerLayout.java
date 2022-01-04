@@ -5,9 +5,7 @@ import com.github.alllef.transportationservice.backend.database.service.Consumer
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointEvent;
 import com.github.alllef.transportationservice.ui.transport_point.entity_layout.TransportPointLayoutFactory;
 import com.github.alllef.transportationservice.ui.transport_point.form_layout.event.ConsumerFormEvent;
-import com.github.alllef.transportationservice.ui.transport_point.form_layout.event.ProviderFormEvent;
 import com.github.alllef.transportationservice.ui.transport_point.form_layout.layout.ConsumerFormLayout;
-import com.github.alllef.transportationservice.ui.transport_point.form_layout.layout.ProviderFormLayout;
 import com.vaadin.flow.component.ClickEvent;
 
 public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer> {

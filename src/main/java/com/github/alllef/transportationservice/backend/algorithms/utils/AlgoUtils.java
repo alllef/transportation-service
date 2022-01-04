@@ -20,4 +20,5 @@ public class AlgoUtils {
     public static boolean isDegenerate(int providersNum,int consumersNum,int nodesWithPlanNum) {
         return (providersNum + consumersNum - 1) != nodesWithPlanNum;
     }
+
 }
