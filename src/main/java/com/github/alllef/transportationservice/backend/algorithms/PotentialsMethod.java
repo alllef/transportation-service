@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @Getter
 public class PotentialsMethod {
     private CostsModel costsModel;
-    private Map<Coords, Integer> nodesWithPlanNum;
 
     private Map<Coords, Integer> potentialNodes = new HashMap<>();
 
@@ -25,7 +24,6 @@ public class PotentialsMethod {
 
     public PotentialsMethod(CostsModel costsModel, Map<Coords, Integer> nodesWithPlanNum) {
         this.costsModel = costsModel;
-        this.nodesWithPlanNum = nodesWithPlanNum;
         potentialNodes.putAll(nodesWithPlanNum);
 
         potentialsAlgo();
@@ -47,10 +45,10 @@ public class PotentialsMethod {
         Map<Integer, Integer> consumersPotentials = new HashMap<>();
 
         BiPredicate<Integer, Integer> providerUndefined = (provider, consumer) ->
-                providersPotentials.get(provider) == null && consumersPotentials.get(consumer) != null;
+                providersPotentials.get(provider) == null && consumersPotentials.get(consumer) != null && potentialNodes.containsKey(new Coords(provider, consumer));
 
         BiPredicate<Integer, Integer> consumerUndefined = (provider, consumer) ->
-                providersPotentials.get(provider) != null && consumersPotentials.get(consumer) == null;
+                providersPotentials.get(provider) != null && consumersPotentials.get(consumer) == null && potentialNodes.containsKey(new Coords(provider, consumer));
 
 
         providersPotentials.put(1, 0);
@@ -78,7 +76,7 @@ public class PotentialsMethod {
         for (int provider = 0; provider < costsModel.providersAmount(); provider++) {
             for (int consumer = 0; consumer < costsModel.consumersAmount(); consumer++) {
 
-                if (nodesWithPlanNum.get(new Coords(provider, consumer)) == null) {
+                if (potentialNodes.get(new Coords(provider, consumer)) == null) {
                     int pathCost = costs[provider][consumer] - (potentials.providers().get(provider) + potentials.consumers().get(consumer));
                     if (pathCost < 0) {
                         if (isOptimalSolution) {

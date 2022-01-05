@@ -30,7 +30,6 @@ public class PotentialTests {
     }
 
     @TestFactory
-
     Collection<DynamicTest> transportTaskPotentialsTests() {
         return Arrays.asList(
                 dynamicTest("Closed transport task", () -> assertEquals(110, getTransportSum(TestData.getClosedTransportTask()))),
