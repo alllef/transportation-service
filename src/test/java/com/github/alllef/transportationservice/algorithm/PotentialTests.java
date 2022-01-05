@@ -24,11 +24,6 @@ public class PotentialTests {
         return AlgoUtils.calcTransportSum(transportAlgo.getNodesWithShipments(), transportAlgo.getTmpCostsMatrix());
     }
 
-    @Test
-    void getTransportSumClosed(){
-        assertEquals(110, getTransportSum(TestData.getClosedTransportTask()));
-    }
-
     @TestFactory
     Collection<DynamicTest> transportTaskPotentialsTests() {
         return Arrays.asList(

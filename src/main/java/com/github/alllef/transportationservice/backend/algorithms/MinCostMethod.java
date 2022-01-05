@@ -77,6 +77,16 @@ public class MinCostMethod {
         while (blockedProvidersKeys.size() != tmpProviders.size()
                 || blockedConsumersKeys.size() != tmpConsumers.size())
             minCostIter();
+
+        removeMaxValues();
+    }
+
+    public void removeMaxValues() {
+        for (int i = 0; i < tmpCostsMatrix[tmpCostsMatrix.length-1].length; i++)
+            tmpCostsMatrix[tmpCostsMatrix.length-1][i] = 0;
+
+        for (int j = 0; j < tmpCostsMatrix.length; j++)
+            tmpCostsMatrix[j][tmpCostsMatrix[j].length-1] = 0;
     }
 
     private void minCostIter() {

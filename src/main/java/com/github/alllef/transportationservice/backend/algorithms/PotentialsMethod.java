@@ -117,28 +117,20 @@ public class PotentialsMethod {
         if (planNodeCoordsStack.size() > 1)
             coordsFromStart = planNodeCoordsStack.get(1);
 
-        boolean foundNext = false;
-        boolean isFoundFinal = false;
-
         for (Coords tmpCoords : nearestCoordsGraph.get(peekCoords)) {
             if (!foundCoords.contains(tmpCoords)) {
                 foundCoords.add(tmpCoords);
                 planNodeCoordsStack.push(tmpCoords);
-                foundNext = true;
-                break;
-            } else if (tmpCoords.equals(start) && !peekCoords.equals(coordsFromStart)) {
-                isFoundFinal = true;
-                break;
+
+                return pathCycleRecursive(nearestCoordsGraph, foundCoords, planNodeCoordsStack);
             }
+            else if (tmpCoords.equals(start) && !peekCoords.equals(coordsFromStart))
+                return planNodeCoordsStack.stream()
+                        .toList();
         }
 
-        if (!foundNext && !isFoundFinal) {
-            planNodeCoordsStack.pop();
-            return pathCycleRecursive(nearestCoordsGraph, foundCoords, planNodeCoordsStack);
-        } else {
-            return planNodeCoordsStack.stream()
-                    .toList();
-        }
+        planNodeCoordsStack.pop();
+        return pathCycleRecursive(nearestCoordsGraph, foundCoords, planNodeCoordsStack);
     }
 
     private void optimizeSolution(List<Coords> pathsCycle) {
