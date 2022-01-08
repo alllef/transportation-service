@@ -33,6 +33,7 @@ public class PotentialsMethod {
         var potentials = calcPotentials();
         var pathCost = isOptimalSolution(potentials);
         while (pathCost.isPresent()) {
+            System.out.println("Too much");
             List<Coords> pathsCycle = getPathsCycle(pathCost.get());
             optimizeSolution(pathsCycle);
             potentials = calcPotentials();
@@ -51,10 +52,11 @@ public class PotentialsMethod {
                 providersPotentials.get(provider) != null && consumersPotentials.get(consumer) == null && potentialNodes.containsKey(new Coords(provider, consumer));
 
 
-        providersPotentials.put(1, 0);
+        providersPotentials.put(0, 0);
         int[][] costs = costsModel.getCostsMatrix();
 
         while (providersPotentials.size() < costsModel.providersAmount() || consumersPotentials.size() < costsModel.consumersAmount()) {
+
             for (int provider = 0; provider < costsModel.providersAmount(); provider++) {
                 for (int consumer = 0; consumer < costsModel.consumersAmount(); consumer++) {
                     if (consumerUndefined.test(provider, consumer))
@@ -123,8 +125,7 @@ public class PotentialsMethod {
                 planNodeCoordsStack.push(tmpCoords);
 
                 return pathCycleRecursive(nearestCoordsGraph, foundCoords, planNodeCoordsStack);
-            }
-            else if (tmpCoords.equals(start) && !peekCoords.equals(coordsFromStart))
+            } else if (tmpCoords.equals(start) && !peekCoords.equals(coordsFromStart))
                 return planNodeCoordsStack.stream()
                         .toList();
         }
@@ -151,10 +152,12 @@ public class PotentialsMethod {
         }
 
         if (AlgoUtils.isDegenerate(costsModel.providersAmount(), costsModel.consumersAmount(), potentialNodes.size())) {
-            potentialNodes = potentialNodes.entrySet()
-                    .stream()
-                    .filter(entry -> entry.getValue() != 0)
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            for (Coords coords : potentialNodes.keySet()) {
+                if (potentialNodes.get(coords) == 0) {
+                    potentialNodes.remove(coords);
+                    break;
+                }
+            }
         }
     }
 
