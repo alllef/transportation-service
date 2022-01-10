@@ -36,6 +36,15 @@ public class PotentialTests {
     }
 
     @Test
+    void secondInfiniteExecutedTask() {
+        CostsModel costsModel = TestData.getSecondTransportTaskWithInfiniteExecution();
+        TransportAlgo transportAlgo = new TransportAlgo(costsModel);
+        assertTimeoutPreemptively(Duration.ofSeconds(5), transportAlgo::startAlgo);
+        assertTrue(lessThanProviderCapacity(transportAlgo.getCostsModel(), transportAlgo.getNodesWithShipments()));
+        assertTrue(lessThanConsumerNeeds(transportAlgo.getCostsModel(), transportAlgo.getNodesWithShipments()));
+    }
+
+    @Test
     void noSuchElementTask() {
         CostsModel costsModel = TestData.getTransportTaskNoSuchElement();
         TransportAlgo transportAlgo = new TransportAlgo(costsModel);
@@ -45,7 +54,7 @@ public class PotentialTests {
     }
 
 
-    @RepeatedTest(20)
+    @RepeatedTest(1000)
     void checkProperties() {
         CostsModel costsModel = TestData.randomGeneratedModel();
         System.out.println(costsModel);

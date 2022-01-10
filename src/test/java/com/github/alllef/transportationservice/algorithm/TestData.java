@@ -40,12 +40,24 @@ public class TestData {
     }
 
     public static CostsModel getTransportTaskWithInfiniteExecution() {
-        List<Integer> providers = Arrays.asList(30, 26, 14);
-        List<Integer> consumers = Arrays.asList(11, 8, 27, 3, 18);
+        List<Integer> providers = Arrays.asList(14, 28, 26, 1);
+        List<Integer> consumers = Arrays.asList(16, 1, 26, 27);
         int[][] costsRow = new int[providers.size()][consumers.size()];
-        costsRow[0] = new int[]{9, 14, 6, 1, 5};
-        costsRow[1] = new int[]{18, 18, 11, 19, 12};
-        costsRow[2] = new int[]{4, 20, 13, 1, 10};
+        costsRow[0] = new int[]{12, 18, 18, 15};
+        costsRow[1] = new int[]{13, 4, 5, 4};
+        costsRow[2] = new int[]{16, 7, 9, 9};
+        costsRow[3] = new int[]{9, 17, 19, 4};
+        return new CostsModel(costsRow, providers, consumers);
+    }
+
+    public static CostsModel getSecondTransportTaskWithInfiniteExecution() {
+        List<Integer> providers = Arrays.asList(2, 5, 15, 3);
+        List<Integer> consumers = Arrays.asList(20, 3, 12);
+        int[][] costsRow = new int[providers.size()][consumers.size()];
+        costsRow[0] = new int[]{12, 20, 1};
+        costsRow[1] = new int[]{5, 17, 6};
+        costsRow[2] = new int[]{2, 8, 20};
+        costsRow[3] = new int[]{10, 2, 14};
         return new CostsModel(costsRow, providers, consumers);
     }
 
@@ -61,8 +73,8 @@ public class TestData {
 
     public static CostsModel randomGeneratedModel() {
         Random rand = new Random();
-        int providersNum = rand.nextInt(5) + 2;
-        int consumersNum = rand.nextInt(5) + 2;
+        int providersNum = rand.nextInt(3) + 2;
+        int consumersNum = rand.nextInt(4) + 2;
         int[][] costsRow = new int[providersNum][consumersNum];
 
         List<Integer> providers = new ArrayList<>();

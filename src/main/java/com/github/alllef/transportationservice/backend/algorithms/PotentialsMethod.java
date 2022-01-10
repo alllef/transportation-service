@@ -30,18 +30,28 @@ public class PotentialsMethod {
     }
 
     private void potentialsAlgo() {
+        int cost = AlgoUtils.calcTransportSum(potentialNodes, costsModel.getCostsMatrix());
+        System.out.println(cost);
         var potentials = calcPotentials();
-        var pathCost = isOptimalSolution(potentials);
-        while (pathCost.isPresent()) {
-            System.out.println("Too much");
-            List<Coords> pathsCycle = getPathsCycle(pathCost.get());
-            optimizeSolution(pathsCycle);
-            potentials = calcPotentials();
-            pathCost = isOptimalSolution(potentials);
+        if (potentials.isPresent()) {
+            var pathCost = isOptimalSolution(potentials.get());
+            while (pathCost.isPresent()) {
+                List<Coords> pathsCycle = getPathsCycle(pathCost.get());
+                optimizeSolution(pathsCycle);
+
+                int costOther = AlgoUtils.calcTransportSum(potentialNodes, costsModel.getCostsMatrix());
+                System.out.println(costOther);
+                potentials = calcPotentials();
+                if (potentials.isPresent())
+                    pathCost = isOptimalSolution(potentials.get());
+                else {
+                    break;
+                }
+            }
         }
     }
 
-    private Potentials calcPotentials() {
+    private Optional<Potentials> calcPotentials() {
         Map<Integer, Integer> providersPotentials = new HashMap<>();
         Map<Integer, Integer> consumersPotentials = new HashMap<>();
 
@@ -56,18 +66,26 @@ public class PotentialsMethod {
         int[][] costs = costsModel.getCostsMatrix();
 
         while (providersPotentials.size() < costsModel.providersAmount() || consumersPotentials.size() < costsModel.consumersAmount()) {
+            int providerPotentialsPrevSize = providersPotentials.size();
+            int consumerPotentialsPrevSize = consumersPotentials.size();
 
             for (int provider = 0; provider < costsModel.providersAmount(); provider++) {
                 for (int consumer = 0; consumer < costsModel.consumersAmount(); consumer++) {
+
                     if (consumerUndefined.test(provider, consumer))
                         consumersPotentials.put(consumer, costs[provider][consumer] - providersPotentials.get(provider));
                     else if (providerUndefined.test(provider, consumer))
                         providersPotentials.put(provider, costs[provider][consumer] - consumersPotentials.get(consumer));
                 }
             }
+            if (providerPotentialsPrevSize == providersPotentials.size() && consumerPotentialsPrevSize == consumersPotentials.size()
+                    && (providersPotentials.size() != costsModel.providersAmount() || consumersPotentials.size() != costsModel.consumersAmount())) {
+
+                return Optional.empty();
+            }
         }
 
-        return new Potentials(providersPotentials, consumersPotentials);
+        return Optional.of(new Potentials(providersPotentials, consumersPotentials));
     }
 
     private Optional<CoordsNum> isOptimalSolution(Potentials potentials) {
@@ -153,7 +171,7 @@ public class PotentialsMethod {
 
         if (AlgoUtils.isDegenerate(costsModel.providersAmount(), costsModel.consumersAmount(), potentialNodes.size())) {
             for (Coords coords : potentialNodes.keySet()) {
-                if (potentialNodes.get(coords) == 0) {
+                if (potentialNodes.get(coords) == 0 && !coords.equals(pathsCycle.get(0))) {
                     potentialNodes.remove(coords);
                     break;
                 }
