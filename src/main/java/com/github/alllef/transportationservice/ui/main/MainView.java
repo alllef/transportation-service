@@ -6,6 +6,8 @@ import com.github.alllef.transportationservice.ui.grid_layout.CostsGridLayoutFac
 import com.github.alllef.transportationservice.ui.transport_point.manager_layout.*;
 import com.github.alllef.transportationservice.ui.results_grid_layout.ResultsGridLayout;
 import com.github.alllef.transportationservice.ui.results_grid_layout.ResultsGridLayoutFactory;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -44,7 +46,7 @@ public class MainView extends VerticalLayout {
     }
 
     private void configureListeners() {
-        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderAddEvent.class, event -> costsGridLayout.addRow(event.getProvider(), event.getTransport()));
+        providerManagerLayout.addListener(TransportPointManagerEvent.ProviderAddEvent.class, event -> costsGridLayout.addRow(event.getProvider(), event.getTransport(),event.getCapacity()));
         providerManagerLayout.addListener(TransportPointManagerEvent.ProviderDeleteEvent.class, event -> costsGridLayout.removeRow(event.getProvider()));
         providerManagerLayout.addListener(TransportPointManagerEvent.ProviderCapacityChangedEvent.class, event -> costsGridLayout.onProviderCapacityUpdated(event.getProvider(), event.getCapacity()));
 
@@ -54,11 +56,25 @@ public class MainView extends VerticalLayout {
 
         costsGridLayout.addListener(CostsGridEvent.CalculationEvent.class, calculationEvent -> {
             if (resultsGridLayout == null) {
-                resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
+                try {
+                    resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
+                } catch (NullPointerException e) {
+                    Notification notification = new Notification("Some providers or consumers are not configured properly");
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setDuration(5000);
+                    notification.open();
+                }
                 add(resultsGridLayout);
             }
             remove(resultsGridLayout);
-            resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
+            try {
+                resultsGridLayout = resultsGridLayoutFactory.createResultsGridLayout(providerManagerLayout.getProvidersWithTransportAndCapacity(), consumerManagerLayout.getUsedTransportPoints());
+            } catch (NullPointerException e) {
+                Notification notification = new Notification("Some providers or consumers are not configured properly");
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setDuration(5000);
+                notification.open();
+            }
             add(resultsGridLayout);
         });
     }

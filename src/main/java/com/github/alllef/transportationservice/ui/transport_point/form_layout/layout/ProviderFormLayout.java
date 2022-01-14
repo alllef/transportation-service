@@ -8,7 +8,6 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 
 public class ProviderFormLayout extends TransportPointFormLayout {
     private Provider provider = new Provider();
