@@ -21,7 +21,6 @@ import lombok.Getter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public abstract class TransportPointManagerLayout<T extends TransportPoint> extends VerticalLayout {
     private final TransportPointLayoutFactory transportPointLayoutFactory;
     protected Button createButton = new Button();
@@ -73,6 +72,7 @@ public abstract class TransportPointManagerLayout<T extends TransportPoint> exte
 
             transportPointLayout.addListener(TransportPointEvent.CapacityChangedEvent.class,
                     event -> {
+                        System.out.println("Capacity changed to "+event.getCapacity());
                         T tmpTransportPoint = (T) event.getTransportPoint();
                         if (tmpTransportPoint instanceof Provider tmpProvider)
                             fireEvent(new TransportPointManagerEvent.ProviderCapacityChangedEvent(this, tmpProvider, event.getCapacity()));

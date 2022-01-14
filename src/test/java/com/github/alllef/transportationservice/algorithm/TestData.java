@@ -40,13 +40,12 @@ public class TestData {
     }
 
     public static CostsModel getTransportTaskWithInfiniteExecution() {
-        List<Integer> providers = Arrays.asList(14, 28, 26, 1);
-        List<Integer> consumers = Arrays.asList(16, 1, 26, 27);
+        List<Integer> providers = Arrays.asList(11, 17, 15);
+        List<Integer> consumers = Arrays.asList(17, 26, 16);
         int[][] costsRow = new int[providers.size()][consumers.size()];
-        costsRow[0] = new int[]{12, 18, 18, 15};
-        costsRow[1] = new int[]{13, 4, 5, 4};
-        costsRow[2] = new int[]{16, 7, 9, 9};
-        costsRow[3] = new int[]{9, 17, 19, 4};
+        costsRow[0] = new int[]{4, 13, 19};
+        costsRow[1] = new int[]{3, 11, 16};
+        costsRow[2] = new int[]{18, 7, 12};
         return new CostsModel(costsRow, providers, consumers);
     }
 

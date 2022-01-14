@@ -37,7 +37,7 @@ public class ProviderManagerLayout extends TransportPointManagerLayout<Provider>
             providerFormLayout.addListener(ProviderFormEvent.ProviderSaveEvent.class, saveEvent -> {
                 providerService.save(saveEvent.getProvider());
                 remove(providerFormLayout);
-                choosePointComboBox.setItems(providerService.findAll());
+                resetComboBoxValues(providerService.findAll());
             });
             providerFormLayout.addListener(ProviderFormEvent.ProviderFormCloseEvent.class, closeEvent -> remove(providerFormLayout));
         });
@@ -65,7 +65,6 @@ public class ProviderManagerLayout extends TransportPointManagerLayout<Provider>
 
     public Map<Provider, Map.Entry<Transport, Integer>> getProvidersWithTransportAndCapacity() {
         Map<Provider, Map.Entry<Transport, Integer>> providersWithTransportAndCapacity = new HashMap<>();
-
         for (Provider provider : providerTransportMap.keySet()) {
             providersWithTransportAndCapacity.put(provider, Map.entry(providerTransportMap.get(provider), usedTransportPoints.get(provider)));
         }

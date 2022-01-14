@@ -32,7 +32,7 @@ public class ConsumerManagerLayout extends TransportPointManagerLayout<Consumer>
             consumerFormLayout.addListener(ConsumerFormEvent.ConsumerSaveEvent.class, saveEvent -> {
                 consumerService.save(saveEvent.getConsumer());
                 remove(consumerFormLayout);
-                choosePointComboBox.setItems(consumerService.findAll());
+                resetComboBoxValues(consumerService.findAll());
             });
             consumerFormLayout.addListener(ConsumerFormEvent.ConsumerFormCloseEvent.class, closeEvent -> remove(consumerFormLayout));
         });

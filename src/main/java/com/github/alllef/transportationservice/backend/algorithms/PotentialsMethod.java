@@ -35,16 +35,19 @@ public class PotentialsMethod {
         var potentials = calcPotentials();
         if (potentials.isPresent()) {
             var pathCost = isOptimalSolution(potentials.get());
+            long currTime = System.currentTimeMillis();
+
             while (pathCost.isPresent()) {
                 List<Coords> pathsCycle = getPathsCycle(pathCost.get());
                 optimizeSolution(pathsCycle);
 
                 int costOther = AlgoUtils.calcTransportSum(potentialNodes, costsModel.getCostsMatrix());
-                System.out.println(costOther);
+                // System.out.println(costOther);
                 potentials = calcPotentials();
-                if (potentials.isPresent())
+                if (potentials.isPresent() && System.currentTimeMillis() - currTime < 500)
                     pathCost = isOptimalSolution(potentials.get());
                 else {
+                    System.out.println("Best cost was " + costOther);
                     break;
                 }
             }
@@ -60,7 +63,6 @@ public class PotentialsMethod {
 
         BiPredicate<Integer, Integer> consumerUndefined = (provider, consumer) ->
                 providersPotentials.get(provider) != null && consumersPotentials.get(consumer) == null && potentialNodes.containsKey(new Coords(provider, consumer));
-
 
         providersPotentials.put(0, 0);
         int[][] costs = costsModel.getCostsMatrix();
